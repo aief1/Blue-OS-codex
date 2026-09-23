@@ -1,0 +1,872 @@
+<template>
+  <list class="page" scrollbar="true" globalscrollbar="true">
+    <list-item class="screen quota-screen" type="quota">
+      <div class="topbar">
+        <text class="app-name">Codex</text>
+        <div class="clock-box" onclick="refreshData">
+          <div class="clock-ring"></div>
+          <text class="top-clock">{{clockText}}</text>
+        </div>
+      </div>
+
+      <div class="meter meter-five">
+        <div class="meter-heading">
+          <text class="meter-label meter-label-five">5 小时</text>
+          <text class="meter-value meter-value-five">{{fiveRemaining}}%</text>
+        </div>
+        <div class="segments">
+          <div class="segment" style="background-color: {{fiveSegment1}}"></div>
+          <div class="segment" style="background-color: {{fiveSegment2}}"></div>
+          <div class="segment" style="background-color: {{fiveSegment3}}"></div>
+          <div class="segment" style="background-color: {{fiveSegment4}}"></div>
+          <div class="segment" style="background-color: {{fiveSegment5}}"></div>
+          <div class="segment" style="background-color: {{fiveSegment6}}"></div>
+          <div class="segment" style="background-color: {{fiveSegment7}}"></div>
+          <div class="segment" style="background-color: {{fiveSegment8}}"></div>
+          <div class="segment" style="background-color: {{fiveSegment9}}"></div>
+          <div class="segment" style="background-color: {{fiveSegment10}}"></div>
+          <div class="segment" style="background-color: {{fiveSegment11}}"></div>
+          <div class="segment" style="background-color: {{fiveSegment12}}"></div>
+          <div class="segment segment-last" style="background-color: {{fiveSegment13}}"></div>
+        </div>
+        <div class="meter-caption">
+          <text class="caption-muted">剩余</text>
+          <text class="caption-muted caption-right">已用 {{fiveUsed}}%</text>
+        </div>
+      </div>
+
+      <div class="meter meter-week">
+        <div class="meter-heading">
+          <text class="meter-label meter-label-week">7 天</text>
+          <text class="meter-value meter-value-week">{{weekRemaining}}%</text>
+        </div>
+        <div class="segments">
+          <div class="segment" style="background-color: {{weekSegment1}}"></div>
+          <div class="segment" style="background-color: {{weekSegment2}}"></div>
+          <div class="segment" style="background-color: {{weekSegment3}}"></div>
+          <div class="segment" style="background-color: {{weekSegment4}}"></div>
+          <div class="segment" style="background-color: {{weekSegment5}}"></div>
+          <div class="segment" style="background-color: {{weekSegment6}}"></div>
+          <div class="segment" style="background-color: {{weekSegment7}}"></div>
+          <div class="segment" style="background-color: {{weekSegment8}}"></div>
+          <div class="segment" style="background-color: {{weekSegment9}}"></div>
+          <div class="segment" style="background-color: {{weekSegment10}}"></div>
+          <div class="segment" style="background-color: {{weekSegment11}}"></div>
+          <div class="segment" style="background-color: {{weekSegment12}}"></div>
+          <div class="segment segment-last" style="background-color: {{weekSegment13}}"></div>
+        </div>
+        <div class="meter-caption">
+          <text class="caption-muted">剩余</text>
+          <text class="caption-muted caption-right">已用 {{weekUsed}}%</text>
+        </div>
+      </div>
+
+      <div class="reset-row">
+        <div class="reset-card reset-card-left">
+          <text class="reset-label">重置 (5h)</text>
+          <text class="reset-time reset-time-five">{{fiveResetCardText}}</text>
+        </div>
+        <div class="reset-card">
+          <text class="reset-label">重置 (7d)</text>
+          <text class="reset-time reset-time-week">{{weekResetCardText}}</text>
+        </div>
+      </div>
+
+      <div class="dashboard-footer">
+        <div class="footer-model">
+          <div class="source-square" style="background-color: {{sourceColor}}"></div>
+          <text class="footer-brand">{{modelText}}</text>
+        </div>
+        <text class="footer-refresh">{{refreshText}}</text>
+      </div>
+
+    </list-item>
+
+    <list-item class="screen usage-screen" type="usage">
+      <div class="usage-topbar">
+        <text class="usage-kicker">今日用量</text>
+        <div class="usage-clock-box">
+          <div class="clock-ring"></div>
+          <text class="top-clock">{{clockText}}</text>
+        </div>
+      </div>
+
+      <div class="usage-total-row">
+        <text class="usage-total">{{todayTokensText}}</text>
+        <text class="usage-unit">tokens</text>
+      </div>
+      <text class="usage-range">0 点至现在</text>
+
+      <div class="usage-chart">
+        <div class="usage-bar" style="height: {{usageBar1Height}}px; background-color: {{usageBar1Color}}"></div>
+        <div class="usage-bar" style="height: {{usageBar2Height}}px; background-color: {{usageBar2Color}}"></div>
+        <div class="usage-bar" style="height: {{usageBar3Height}}px; background-color: {{usageBar3Color}}"></div>
+        <div class="usage-bar" style="height: {{usageBar4Height}}px; background-color: {{usageBar4Color}}"></div>
+        <div class="usage-bar" style="height: {{usageBar5Height}}px; background-color: {{usageBar5Color}}"></div>
+        <div class="usage-bar" style="height: {{usageBar6Height}}px; background-color: {{usageBar6Color}}"></div>
+        <div class="usage-bar" style="height: {{usageBar7Height}}px; background-color: {{usageBar7Color}}"></div>
+        <div class="usage-bar" style="height: {{usageBar8Height}}px; background-color: {{usageBar8Color}}"></div>
+        <div class="usage-bar" style="height: {{usageBar9Height}}px; background-color: {{usageBar9Color}}"></div>
+        <div class="usage-bar" style="height: {{usageBar10Height}}px; background-color: {{usageBar10Color}}"></div>
+        <div class="usage-bar" style="height: {{usageBar11Height}}px; background-color: {{usageBar11Color}}"></div>
+        <div class="usage-bar usage-bar-last" style="height: {{usageBar12Height}}px; background-color: {{usageBar12Color}}"></div>
+      </div>
+
+      <div class="usage-axis">
+        <text class="axis-label">0h</text>
+        <text class="axis-label axis-peak">峰值 {{usagePeakText}}</text>
+        <text class="axis-label axis-now">now</text>
+      </div>
+
+      <div class="token-summary">
+        <div class="token-stat">
+          <text class="token-stat-label token-input">in</text>
+          <text class="token-stat-value token-input">{{inputTokensText}}</text>
+        </div>
+        <div class="token-stat">
+          <text class="token-stat-label token-output">out</text>
+          <text class="token-stat-value token-output">{{outputTokensText}}</text>
+        </div>
+        <div class="token-stat">
+          <text class="token-stat-label token-cache">cache</text>
+          <text class="token-stat-value token-cache">{{cachedTokensText}}</text>
+        </div>
+      </div>
+
+    </list-item>
+  </list>
+</template>
+
+<script>
+import fetch from '@blueos.network.fetch'
+import storage from '@blueos.storage.storage'
+
+// 与 app.ux 保持一致；留空时显示演示数据。
+const MONITOR_URL = ''
+const MONITOR_TOKEN = ''
+const POLL_INTERVAL_MS = 15000
+
+export default {
+  data() {
+    return {
+      cachedTokensText: '18.6M',
+      clockText: '--:--',
+      fiveRemaining: 88,
+      fiveResetAt: 0,
+      fiveResetCardText: '--/-- --:--',
+      fiveResetText: '03:00 重置',
+      fiveSegment1: '#b9ff86',
+      fiveSegment2: '#b9ff86',
+      fiveSegment3: '#b9ff86',
+      fiveSegment4: '#b9ff86',
+      fiveSegment5: '#b9ff86',
+      fiveSegment6: '#b9ff86',
+      fiveSegment7: '#b9ff86',
+      fiveSegment8: '#b9ff86',
+      fiveSegment9: '#b9ff86',
+      fiveSegment10: '#b9ff86',
+      fiveSegment11: '#b9ff86',
+      fiveSegment12: '#b9ff86',
+      fiveSegment13: '#1d261c',
+      fiveUsed: 12,
+      inputTokensText: '22.5M',
+      outputTokensText: '74.3K',
+      pollTimerId: -1,
+      modelText: 'GPT-5.6',
+      refreshText: '刷新 --:--',
+      sourceColor: '#b8ff5a',
+      sourceText: '演示数据',
+      syncText: '演示',
+      tickTimerId: -1,
+      todayTokensText: '22.6M',
+      updatedAt: 0,
+      updatedText: '刚刚',
+      usageBar1Color: '#2f813e',
+      usageBar1Height: 44,
+      usageBar2Color: '#2f813e',
+      usageBar2Height: 36,
+      usageBar3Color: '#2f813e',
+      usageBar3Height: 31,
+      usageBar4Color: '#2f813e',
+      usageBar4Height: 96,
+      usageBar5Color: '#2f813e',
+      usageBar5Height: 41,
+      usageBar6Color: '#2f813e',
+      usageBar6Height: 52,
+      usageBar7Color: '#b9ff86',
+      usageBar7Height: 132,
+      usageBar8Color: '#2f813e',
+      usageBar8Height: 92,
+      usageBar9Color: '#2f813e',
+      usageBar9Height: 87,
+      usageBar10Color: '#2f813e',
+      usageBar10Height: 39,
+      usageBar11Color: '#2f813e',
+      usageBar11Height: 56,
+      usageBar12Color: '#2f813e',
+      usageBar12Height: 47,
+      usagePeakText: '12:00',
+      weekRemaining: 17,
+      weekResetAt: 0,
+      weekResetCardText: '--/-- --:--',
+      weekResetText: '周日 09/27',
+      weekSegment1: '#ffe873',
+      weekSegment2: '#ffe873',
+      weekSegment3: '#ffe873',
+      weekSegment4: '#2b281b',
+      weekSegment5: '#2b281b',
+      weekSegment6: '#2b281b',
+      weekSegment7: '#2b281b',
+      weekSegment8: '#2b281b',
+      weekSegment9: '#2b281b',
+      weekSegment10: '#2b281b',
+      weekSegment11: '#2b281b',
+      weekSegment12: '#2b281b',
+      weekSegment13: '#2b281b',
+      weekUsed: 83
+    }
+  },
+
+  onInit() {
+    const now = Date.now()
+    this.fiveResetAt = now + 3 * 60 * 60 * 1000
+    this.weekResetAt = now + 4 * 24 * 60 * 60 * 1000
+    this.updatedAt = now
+    this.refreshClock()
+    this.refreshLabels()
+    this.updateBars()
+  },
+
+  onReady() {
+    this.tickTimerId = setInterval(() => {
+      this.refreshClock()
+      this.refreshLabels()
+    }, 1000)
+    this.refreshData()
+    this.pollTimerId = setInterval(() => {
+      this.refreshData()
+    }, POLL_INTERVAL_MS)
+  },
+
+  onDestroy() {
+    clearInterval(this.tickTimerId)
+    clearInterval(this.pollTimerId)
+  },
+
+  refreshData() {
+    const monitorUrl = this.readSetting('codexPulse.monitorUrl.v1', MONITOR_URL)
+    const monitorToken = this.readSetting('codexPulse.monitorToken.v1', MONITOR_TOKEN)
+    if (!monitorUrl) {
+      this.syncText = '演示'
+      return
+    }
+
+    this.syncText = '同步中'
+    const headers = { 'Accept': 'application/json' }
+    if (monitorToken) {
+      headers['X-Codex-Watch-Token'] = monitorToken
+    }
+
+    fetch.fetch({
+      url: monitorUrl,
+      method: 'GET',
+      header: headers,
+      responseType: 'json',
+      success: (response) => {
+        if (response.code < 200 || response.code >= 300) {
+          this.markOffline()
+          return
+        }
+        this.applySnapshot(response.data)
+      },
+      fail: () => {
+        this.markOffline()
+      }
+    })
+  },
+
+  applySnapshot(raw) {
+    let snapshot = raw
+    if (typeof raw === 'string') {
+      try {
+        snapshot = JSON.parse(raw)
+      } catch (error) {
+        this.markOffline()
+        return
+      }
+    }
+    if (!snapshot || !snapshot.quota) {
+      this.markOffline()
+      return
+    }
+
+    const fiveHour = snapshot.quota.fiveHour || {}
+    const weekly = snapshot.quota.weekly || {}
+    const usage = snapshot.usage || {}
+
+    this.fiveRemaining = this.clampPercent(fiveHour.remainingPercent)
+    this.weekRemaining = this.clampPercent(weekly.remainingPercent)
+    this.fiveResetAt = Number(fiveHour.resetsAt || 0) * 1000
+    this.weekResetAt = Number(weekly.resetsAt || 0) * 1000
+    this.todayTokensText = this.formatTokens(usage.todayTokens)
+    this.inputTokensText = this.formatTokens(usage.inputTokens)
+    this.outputTokensText = this.formatTokens(usage.outputTokens)
+    this.cachedTokensText = this.formatTokens(usage.cachedTokens)
+    this.usagePeakText = usage.peakLabel || '--:--'
+    this.modelText = this.formatModel(usage.currentModel || snapshot.currentModel)
+    this.updatedAt = Number(snapshot.updatedAt || 0) * 1000 || Date.now()
+    this.sourceColor = '#b8ff5a'
+    this.sourceText = '实时数据'
+    this.syncText = '已同步'
+    this.updateBars()
+    this.updateUsageChart(usage.bars || [])
+    this.refreshLabels()
+  },
+
+  markOffline() {
+    this.sourceColor = '#ff775f'
+    this.sourceText = '连接中断'
+    this.syncText = '重试'
+  },
+
+  readSetting(key, fallback) {
+    try {
+      const value = storage.getSync({ key: key })
+      return value ? String(value) : fallback
+    } catch (error) {
+      return fallback
+    }
+  },
+
+  clampPercent(value) {
+    const numberValue = Number(value)
+    if (isNaN(numberValue)) {
+      return 0
+    }
+    return Math.max(0, Math.min(100, Math.round(numberValue)))
+  },
+
+  updateBars() {
+    this.fiveUsed = 100 - this.fiveRemaining
+    this.weekUsed = 100 - this.weekRemaining
+    this.fiveSegment1 = this.segmentColor(this.fiveRemaining, 1, '#b9ff86', '#1d261c', 13)
+    this.fiveSegment2 = this.segmentColor(this.fiveRemaining, 2, '#b9ff86', '#1d261c', 13)
+    this.fiveSegment3 = this.segmentColor(this.fiveRemaining, 3, '#b9ff86', '#1d261c', 13)
+    this.fiveSegment4 = this.segmentColor(this.fiveRemaining, 4, '#b9ff86', '#1d261c', 13)
+    this.fiveSegment5 = this.segmentColor(this.fiveRemaining, 5, '#b9ff86', '#1d261c', 13)
+    this.fiveSegment6 = this.segmentColor(this.fiveRemaining, 6, '#b9ff86', '#1d261c', 13)
+    this.fiveSegment7 = this.segmentColor(this.fiveRemaining, 7, '#b9ff86', '#1d261c', 13)
+    this.fiveSegment8 = this.segmentColor(this.fiveRemaining, 8, '#b9ff86', '#1d261c', 13)
+    this.fiveSegment9 = this.segmentColor(this.fiveRemaining, 9, '#b9ff86', '#1d261c', 13)
+    this.fiveSegment10 = this.segmentColor(this.fiveRemaining, 10, '#b9ff86', '#1d261c', 13)
+    this.fiveSegment11 = this.segmentColor(this.fiveRemaining, 11, '#b9ff86', '#1d261c', 13)
+    this.fiveSegment12 = this.segmentColor(this.fiveRemaining, 12, '#b9ff86', '#1d261c', 13)
+    this.fiveSegment13 = this.segmentColor(this.fiveRemaining, 13, '#b9ff86', '#1d261c', 13)
+    this.weekSegment1 = this.segmentColor(this.weekRemaining, 1, '#ffe873', '#2b281b', 13)
+    this.weekSegment2 = this.segmentColor(this.weekRemaining, 2, '#ffe873', '#2b281b', 13)
+    this.weekSegment3 = this.segmentColor(this.weekRemaining, 3, '#ffe873', '#2b281b', 13)
+    this.weekSegment4 = this.segmentColor(this.weekRemaining, 4, '#ffe873', '#2b281b', 13)
+    this.weekSegment5 = this.segmentColor(this.weekRemaining, 5, '#ffe873', '#2b281b', 13)
+    this.weekSegment6 = this.segmentColor(this.weekRemaining, 6, '#ffe873', '#2b281b', 13)
+    this.weekSegment7 = this.segmentColor(this.weekRemaining, 7, '#ffe873', '#2b281b', 13)
+    this.weekSegment8 = this.segmentColor(this.weekRemaining, 8, '#ffe873', '#2b281b', 13)
+    this.weekSegment9 = this.segmentColor(this.weekRemaining, 9, '#ffe873', '#2b281b', 13)
+    this.weekSegment10 = this.segmentColor(this.weekRemaining, 10, '#ffe873', '#2b281b', 13)
+    this.weekSegment11 = this.segmentColor(this.weekRemaining, 11, '#ffe873', '#2b281b', 13)
+    this.weekSegment12 = this.segmentColor(this.weekRemaining, 12, '#ffe873', '#2b281b', 13)
+    this.weekSegment13 = this.segmentColor(this.weekRemaining, 13, '#ffe873', '#2b281b', 13)
+  },
+
+  updateUsageChart(values) {
+    const bars = []
+    let maximum = 0
+    let peakIndex = -1
+    for (let index = 0; index < 12; index++) {
+      const value = Math.max(0, Number(values[index] || 0))
+      bars.push(value)
+      if (value > maximum) {
+        maximum = value
+        peakIndex = index
+      }
+    }
+
+    const display = []
+    for (let index = 0; index < 12; index++) {
+      const height = maximum > 0 && bars[index] > 0
+        ? 18 + Math.round(bars[index] / maximum * 114)
+        : 8
+      display.push({
+        height: height,
+        color: index === peakIndex ? '#b9ff86' : (bars[index] > 0 ? '#2f813e' : '#172019')
+      })
+    }
+
+    this.usageBar1Height = display[0].height
+    this.usageBar1Color = display[0].color
+    this.usageBar2Height = display[1].height
+    this.usageBar2Color = display[1].color
+    this.usageBar3Height = display[2].height
+    this.usageBar3Color = display[2].color
+    this.usageBar4Height = display[3].height
+    this.usageBar4Color = display[3].color
+    this.usageBar5Height = display[4].height
+    this.usageBar5Color = display[4].color
+    this.usageBar6Height = display[5].height
+    this.usageBar6Color = display[5].color
+    this.usageBar7Height = display[6].height
+    this.usageBar7Color = display[6].color
+    this.usageBar8Height = display[7].height
+    this.usageBar8Color = display[7].color
+    this.usageBar9Height = display[8].height
+    this.usageBar9Color = display[8].color
+    this.usageBar10Height = display[9].height
+    this.usageBar10Color = display[9].color
+    this.usageBar11Height = display[10].height
+    this.usageBar11Color = display[10].color
+    this.usageBar12Height = display[11].height
+    this.usageBar12Color = display[11].color
+  },
+
+  formatTokens(value) {
+    const tokens = Math.max(0, Number(value || 0))
+    if (tokens >= 1000000000) {
+      return (tokens / 1000000000).toFixed(1) + 'G'
+    }
+    if (tokens >= 1000000) {
+      return (tokens / 1000000).toFixed(1) + 'M'
+    }
+    if (tokens >= 1000) {
+      return (tokens / 1000).toFixed(1) + 'K'
+    }
+    return Math.round(tokens) + ''
+  },
+
+  segmentColor(percent, index, activeColor, inactiveColor, total) {
+    return Math.round(percent * total / 100) >= index ? activeColor : inactiveColor
+  },
+
+  refreshClock() {
+    const now = new Date()
+    this.clockText = this.pad(now.getHours()) + ':' + this.pad(now.getMinutes())
+  },
+
+  refreshLabels() {
+    this.fiveResetText = this.formatFiveHourReset(this.fiveResetAt)
+    this.weekResetText = this.formatWeekReset(this.weekResetAt)
+    this.fiveResetCardText = this.formatResetCard(this.fiveResetAt)
+    this.weekResetCardText = this.formatResetCard(this.weekResetAt)
+    this.refreshText = this.formatRefresh(this.updatedAt)
+    this.updatedText = this.formatUpdated(this.updatedAt)
+  },
+
+  formatModel(value) {
+    if (!value) {
+      return this.modelText || 'GPT'
+    }
+    const match = String(value).match(/gpt-([0-9]+(?:\.[0-9]+)?)/i)
+    return match ? 'GPT-' + match[1] : String(value).toUpperCase()
+  },
+
+  formatRefresh(timestamp) {
+    if (!timestamp) {
+      return '刷新 --:--'
+    }
+    const date = new Date(timestamp)
+    return '刷新 ' + this.pad(date.getHours()) + ':' + this.pad(date.getMinutes())
+  },
+
+  formatResetCard(timestamp) {
+    if (!timestamp) {
+      return '--/-- --:--'
+    }
+    const date = new Date(timestamp)
+    return this.pad(date.getMonth() + 1) + '/' + this.pad(date.getDate()) + ' ' +
+      this.pad(date.getHours()) + ':' + this.pad(date.getMinutes())
+  },
+
+  formatFiveHourReset(timestamp) {
+    if (!timestamp) {
+      return '重置时间未知'
+    }
+    const date = new Date(timestamp)
+    return this.pad(date.getHours()) + ':' + this.pad(date.getMinutes()) + ' 重置'
+  },
+
+  formatWeekReset(timestamp) {
+    if (!timestamp) {
+      return '截止日期未知'
+    }
+    const date = new Date(timestamp)
+    const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+    return weekdays[date.getDay()] + ' ' + this.pad(date.getMonth() + 1) + '/' + this.pad(date.getDate())
+  },
+
+  formatUpdated(timestamp) {
+    if (!timestamp) {
+      return '尚未同步'
+    }
+    const seconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000))
+    if (seconds < 15) {
+      return '刚刚'
+    }
+    if (seconds < 60) {
+      return seconds + ' 秒前'
+    }
+    return Math.floor(seconds / 60) + ' 分钟前'
+  },
+
+  pad(value) {
+    return value < 10 ? '0' + value : '' + value
+  }
+}
+</script>
+
+<style lang="less">
+.page {
+  width: 100%;
+  height: 100%;
+  background-color: #08070f;
+}
+
+.screen {
+  width: 100%;
+  height: 555px;
+  padding-left: 36px;
+  padding-right: 36px;
+  flex-direction: column;
+  background-color: #08070f;
+}
+
+.quota-screen {
+  padding-top: 38px;
+}
+
+.topbar {
+  width: 100%;
+  height: 48px;
+  align-items: center;
+}
+
+.app-name {
+  width: 190px;
+  color: #f3f1f7;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.clock-box {
+  width: 204px;
+  height: 40px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.clock-ring {
+  width: 18px;
+  height: 18px;
+  margin-right: 7px;
+  border-width: 5px;
+  border-color: #ffe96d;
+  border-radius: 9px;
+}
+
+.top-clock {
+  color: #efedf4;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.meter {
+  width: 100%;
+  height: 105px;
+  flex-direction: column;
+}
+
+.meter-five {
+  margin-top: 17px;
+}
+
+.meter-week {
+  margin-top: 17px;
+}
+
+.meter-heading {
+  width: 100%;
+  height: 34px;
+  align-items: center;
+}
+
+.meter-label {
+  width: 197px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.meter-label-five {
+  color: #9ef56e;
+}
+
+.meter-label-week {
+  color: #ffe873;
+}
+
+.meter-value {
+  width: 197px;
+  font-size: 29px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.meter-value-five {
+  color: #b9ff86;
+}
+
+.meter-value-week {
+  color: #ffe873;
+}
+
+.segments {
+  width: 100%;
+  height: 16px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.segment {
+  width: 25px;
+  height: 14px;
+  margin-right: 0;
+  border-radius: 3px;
+}
+
+.segment-last {
+  margin-right: 0;
+}
+
+.meter-caption {
+  width: 100%;
+  height: 28px;
+  align-items: center;
+}
+
+.caption-muted {
+  width: 197px;
+  color: #817d8d;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.caption-right {
+  width: 197px;
+  text-align: right;
+}
+
+.reset-row {
+  width: 100%;
+  height: 74px;
+  margin-top: 18px;
+  justify-content: center;
+}
+
+.reset-card {
+  width: 188px;
+  height: 70px;
+  padding-left: 14px;
+  padding-top: 9px;
+  border-width: 1px;
+  border-color: #211f2e;
+  border-radius: 10px;
+  flex-direction: column;
+  background-color: #0d0c16;
+}
+
+.reset-card-left {
+  margin-right: 12px;
+}
+
+.reset-label {
+  color: #8a8696;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.reset-time {
+  margin-top: 5px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.reset-time-five {
+  color: #a7ff77;
+}
+
+.reset-time-week {
+  color: #73baff;
+}
+
+.dashboard-footer {
+  width: 100%;
+  height: 44px;
+  margin-top: 50px;
+  align-items: center;
+}
+
+.footer-model {
+  width: 235px;
+  height: 44px;
+  align-items: center;
+}
+
+.source-square {
+  width: 13px;
+  height: 13px;
+  margin-right: 10px;
+  border-radius: 3px;
+}
+
+.footer-brand {
+  color: #e8e5ed;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.footer-refresh {
+  width: 159px;
+  color: #797585;
+  font-size: 14px;
+  font-weight: 400;
+  text-align: right;
+}
+
+.usage-screen {
+  padding-top: 34px;
+}
+
+.usage-topbar {
+  width: 100%;
+  height: 48px;
+  align-items: center;
+}
+
+.usage-kicker {
+  width: 190px;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.usage-clock-box {
+  width: 204px;
+  height: 40px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.usage-total-row {
+  width: 100%;
+  height: 68px;
+  margin-top: 9px;
+  align-items: flex-end;
+}
+
+.usage-total {
+  color: #ffffff;
+  font-size: 52px;
+  font-weight: 700;
+}
+
+.usage-unit {
+  margin-left: 10px;
+  margin-bottom: 7px;
+  color: #777487;
+  font-size: 16px;
+}
+
+.usage-range {
+  width: 100%;
+  height: 28px;
+  color: #8a8797;
+  font-size: 16px;
+}
+
+.usage-chart {
+  width: 100%;
+  height: 162px;
+  margin-top: 4px;
+  align-items: flex-end;
+}
+
+.usage-bar {
+  width: 25px;
+  min-height: 8px;
+  margin-right: 8px;
+  border-radius: 6px 6px 3px 3px;
+  background-color: #2f813e;
+}
+
+.usage-bar-last {
+  margin-right: 0;
+}
+
+.usage-axis {
+  width: 100%;
+  height: 31px;
+  align-items: center;
+}
+
+.axis-label {
+  width: 82px;
+  color: #696675;
+  font-size: 14px;
+}
+
+.axis-peak {
+  width: 230px;
+  text-align: center;
+  color: #8b8798;
+}
+
+.axis-now {
+  width: 82px;
+  text-align: right;
+}
+
+.token-summary {
+  width: 100%;
+  height: 78px;
+  margin-top: 44px;
+  align-items: center;
+}
+
+.token-stat {
+  width: 131px;
+  height: 68px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.token-stat-label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.token-stat-value {
+  margin-top: 4px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.token-input {
+  color: #9cf26e;
+}
+
+.token-output {
+  color: #66b9ff;
+}
+
+.token-cache {
+  color: #9788ff;
+}
+
+</style>
