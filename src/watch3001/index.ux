@@ -182,29 +182,29 @@ export default {
       updatedAt: 0,
       updatedText: '刚刚',
       usageBar1Color: '#2f813e',
-      usageBar1Height: 44,
+      usageBar1Height: 51,
       usageBar2Color: '#2f813e',
-      usageBar2Height: 36,
+      usageBar2Height: 41,
       usageBar3Color: '#2f813e',
-      usageBar3Height: 31,
+      usageBar3Height: 36,
       usageBar4Color: '#2f813e',
-      usageBar4Height: 96,
+      usageBar4Height: 110,
       usageBar5Color: '#2f813e',
-      usageBar5Height: 41,
+      usageBar5Height: 47,
       usageBar6Color: '#2f813e',
-      usageBar6Height: 52,
+      usageBar6Height: 60,
       usageBar7Color: '#b9ff86',
-      usageBar7Height: 132,
+      usageBar7Height: 152,
       usageBar8Color: '#2f813e',
-      usageBar8Height: 92,
+      usageBar8Height: 106,
       usageBar9Color: '#2f813e',
-      usageBar9Height: 87,
+      usageBar9Height: 100,
       usageBar10Color: '#2f813e',
-      usageBar10Height: 39,
+      usageBar10Height: 45,
       usageBar11Color: '#2f813e',
-      usageBar11Height: 56,
+      usageBar11Height: 64,
       usageBar12Color: '#2f813e',
-      usageBar12Height: 47,
+      usageBar12Height: 54,
       usagePeakText: '12:00',
       weekRemaining: 17,
       weekResetAt: 0,
@@ -393,7 +393,7 @@ export default {
     const display = []
     for (let index = 0; index < 12; index++) {
       const height = maximum > 0 && bars[index] > 0
-        ? 18 + Math.round(bars[index] / maximum * 114)
+        ? 18 + Math.round(bars[index] / maximum * 134)
         : 8
       display.push({
         height: height,
@@ -550,7 +550,7 @@ export default {
 .app-name {
   width: 190px;
   color: #f3f1f7;
-  font-size: 26px;
+  font-size: 29px;
   font-weight: 600;
 }
 
@@ -572,7 +572,7 @@ export default {
 
 .top-clock {
   color: #efedf4;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
 }
 
@@ -592,14 +592,14 @@ export default {
 
 .meter-heading {
   width: 100%;
-  height: 34px;
+  height: 42px;
   align-items: center;
 }
 
 .meter-label {
   width: 197px;
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .meter-label-five {
@@ -612,8 +612,8 @@ export default {
 
 .meter-value {
   width: 197px;
-  font-size: 29px;
-  font-weight: 600;
+  font-size: 34px;
+  font-weight: 700;
   text-align: right;
 }
 
@@ -627,14 +627,14 @@ export default {
 
 .segments {
   width: 100%;
-  height: 16px;
+  height: 18px;
   justify-content: space-between;
   align-items: center;
 }
 
 .segment {
   width: 25px;
-  height: 14px;
+  height: 17px;
   margin-right: 0;
   border-radius: 3px;
 }
@@ -645,14 +645,14 @@ export default {
 
 .meter-caption {
   width: 100%;
-  height: 28px;
+  height: 32px;
   align-items: center;
 }
 
 .caption-muted {
   width: 197px;
-  color: #817d8d;
-  font-size: 15px;
+  color: #9c97a8;
+  font-size: 18px;
   font-weight: 400;
 }
 
@@ -663,21 +663,21 @@ export default {
 
 .reset-row {
   width: 100%;
-  height: 74px;
+  height: 90px;
   margin-top: 18px;
   justify-content: center;
 }
 
 .reset-card {
   width: 188px;
-  height: 70px;
+  height: 86px;
   padding-left: 14px;
-  padding-top: 9px;
+  padding-top: 11px;
   border-width: 1px;
-  border-color: #211f2e;
+  border-color: #302d3c;
   border-radius: 10px;
   flex-direction: column;
-  background-color: #0d0c16;
+  background-color: #11101b;
 }
 
 .reset-card-left {
@@ -685,15 +685,15 @@ export default {
 }
 
 .reset-label {
-  color: #8a8696;
-  font-size: 14px;
-  font-weight: 400;
+  color: #b5b0c0;
+  font-size: 19px;
+  font-weight: 500;
 }
 
 .reset-time {
-  margin-top: 5px;
-  font-size: 18px;
-  font-weight: 600;
+  margin-top: 7px;
+  font-size: 23px;
+  font-weight: 700;
 }
 
 .reset-time-five {
@@ -718,22 +718,22 @@ export default {
 }
 
 .source-square {
-  width: 13px;
-  height: 13px;
+  width: 15px;
+  height: 15px;
   margin-right: 10px;
   border-radius: 3px;
 }
 
 .footer-brand {
   color: #e8e5ed;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
 }
 
 .footer-refresh {
   width: 159px;
-  color: #797585;
-  font-size: 14px;
+  color: #a09aab;
+  font-size: 16px;
   font-weight: 400;
   text-align: right;
 }
@@ -751,7 +751,7 @@ export default {
 .usage-kicker {
   width: 190px;
   color: #ffffff;
-  font-size: 24px;
+  font-size: 27px;
   font-weight: 700;
 }
 
@@ -771,7 +771,7 @@ export default {
 
 .usage-total {
   color: #ffffff;
-  font-size: 52px;
+  font-size: 56px;
   font-weight: 700;
 }
 
@@ -779,27 +779,27 @@ export default {
   margin-left: 10px;
   margin-bottom: 7px;
   color: #777487;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .usage-range {
   width: 100%;
   height: 28px;
   color: #8a8797;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .usage-chart {
   width: 100%;
-  height: 162px;
+  height: 180px;
   margin-top: 4px;
   align-items: flex-end;
 }
 
 .usage-bar {
-  width: 25px;
+  width: 27px;
   min-height: 8px;
-  margin-right: 8px;
+  margin-right: 6px;
   border-radius: 6px 6px 3px 3px;
   background-color: #2f813e;
 }
@@ -816,8 +816,8 @@ export default {
 
 .axis-label {
   width: 82px;
-  color: #696675;
-  font-size: 14px;
+  color: #8b8798;
+  font-size: 16px;
 }
 
 .axis-peak {
@@ -834,7 +834,7 @@ export default {
 .token-summary {
   width: 100%;
   height: 78px;
-  margin-top: 44px;
+  margin-top: 25px;
   align-items: center;
 }
 
@@ -847,13 +847,13 @@ export default {
 }
 
 .token-stat-label {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 700;
 }
 
 .token-stat-value {
   margin-top: 4px;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 700;
 }
 
