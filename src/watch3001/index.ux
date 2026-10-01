@@ -140,7 +140,7 @@
         </div>
       </div>
 
-      <text class="usage-version">v1.0.16</text>
+      <text class="usage-version">v1.0.17</text>
 
     </div>
     <div class="screen task-screen">
@@ -221,7 +221,7 @@
         </div>
       </div>
 
-      <text class="debug-version">Codex Pulse · v1.0.16</text>
+      <text class="debug-version">Codex Pulse · v1.0.17</text>
     </div>
     </swiper>
     <div class="page-indicator" if="{{showPageIndicator}}">
