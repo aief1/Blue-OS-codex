@@ -2,8 +2,8 @@
   "package": "com.codex.pulse",
   "name": "Codex脉冲",
   "icon": "/assets/images/codex-pulse.png",
-  "versionName": "1.0.14",
-  "versionCode": 15,
+  "versionName": "1.0.15",
+  "versionCode": 16,
   "appCategory": [
     "utilities"
   ],

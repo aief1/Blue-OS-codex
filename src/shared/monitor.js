@@ -57,19 +57,32 @@ export function requestSnapshot(config, callbacks) {
     success: (response) => {
       const code = Number(response && response.code)
       const snapshot = parseSnapshot(response && response.data)
-      if (code < 200 || code >= 300 || !snapshot || !snapshot.ok) {
+      if (code < 200 || code >= 300) {
         if (handlers.fail) {
-          handlers.fail()
+          handlers.fail({ type: 'http', code: isNaN(code) ? 0 : code })
+        }
+        return
+      }
+      if (!snapshot) {
+        if (handlers.fail) {
+          handlers.fail({ type: 'format', code: code })
+        }
+        return
+      }
+      if (!snapshot.ok) {
+        if (handlers.fail) {
+          handlers.fail({ type: 'api', code: code })
         }
         return
       }
       if (handlers.success) {
-        handlers.success(snapshot)
+        handlers.success(snapshot, code)
       }
     },
-    fail: () => {
+    fail: (data, code) => {
       if (handlers.fail) {
-        handlers.fail()
+        const errorCode = Number(code)
+        handlers.fail({ type: 'network', code: isNaN(errorCode) ? 0 : errorCode })
       }
     },
     complete: () => {

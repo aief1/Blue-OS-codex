@@ -140,7 +140,7 @@
         </div>
       </div>
 
-      <text class="usage-version">v1.0.14</text>
+      <text class="usage-version">v1.0.15</text>
 
     </div>
     <div class="screen task-screen">
@@ -178,11 +178,57 @@
         <text class="task-footer-text">{{refreshText}}</text>
       </div>
     </div>
+
+    <div class="screen debug-screen">
+      <div class="debug-topbar">
+        <text class="debug-page-title">调试信息</text>
+        <div class="debug-clock-box">
+          <div class="clock-ring"></div>
+          <text class="top-clock">{{clockText}}</text>
+        </div>
+      </div>
+
+      <div class="debug-state-row">
+        <div class="debug-state-square" style="background-color: {{debugStatusColor}}"></div>
+        <text class="debug-state-text">{{debugStatusText}}</text>
+      </div>
+
+      <div class="debug-error-card" id="debugErrorCard">
+        <text class="debug-card-label">最近错误</text>
+        <text class="debug-error-title" lines="1">{{debugErrorText}}</text>
+        <text class="debug-error-detail" lines="2">{{debugErrorDetail}}</text>
+      </div>
+
+      <div class="debug-info-card" id="debugInfoCard">
+        <div class="debug-info-row">
+          <text class="debug-info-label">接口</text>
+          <text class="debug-info-value" lines="1">{{debugEndpointText}}</text>
+        </div>
+        <div class="debug-info-divider"></div>
+        <div class="debug-info-row">
+          <text class="debug-info-label">同步</text>
+          <text class="debug-info-value" lines="1">{{debugTimeText}}</text>
+        </div>
+        <div class="debug-info-divider"></div>
+        <div class="debug-info-row">
+          <text class="debug-info-label">额度</text>
+          <text class="debug-info-value" lines="1">{{debugQuotaText}}</text>
+        </div>
+        <div class="debug-info-divider"></div>
+        <div class="debug-info-row">
+          <text class="debug-info-label">任务</text>
+          <text class="debug-info-value" lines="1">{{debugTaskText}}</text>
+        </div>
+      </div>
+
+      <text class="debug-version">Codex Pulse · v1.0.15</text>
+    </div>
     </swiper>
     <div class="page-indicator" if="{{showPageIndicator}}">
       <div class="page-dot" style="background-color: {{firstPageDotColor}}"></div>
       <div class="page-dot" style="background-color: {{secondPageDotColor}}"></div>
       <div class="page-dot" style="background-color: {{thirdPageDotColor}}"></div>
+      <div class="page-dot" style="background-color: {{fourthPageDotColor}}"></div>
     </div>
   </div>
 </template>
@@ -207,6 +253,16 @@ export default {
     return {
       cachedTokensText: '18.6M',
       clockText: '--:--',
+      debugEndpointText: '未配置',
+      debugErrorDetail: '尚未开始同步',
+      debugErrorText: '暂无错误',
+      debugLastAttemptAt: 0,
+      debugLastSuccessAt: 0,
+      debugQuotaText: '等待数据',
+      debugStatusColor: GOLD,
+      debugStatusText: '等待连接',
+      debugTaskText: '等待数据',
+      debugTimeText: '尝试 --:-- · 成功 --:--',
       fiveRemaining: 88,
       fiveRemainingText: '88%',
       fiveVisibleSegments: 0,
@@ -228,6 +284,7 @@ export default {
       fiveSegment14: GREEN_TRACK,
       fiveUsedText: '12%',
       firstPageDotColor: GREEN,
+      fourthPageDotColor: '#3b443c',
       inputTokensText: '22.5M',
       initialAnimationTimerId: -1,
       outputTokensText: '74.3K',
@@ -322,10 +379,12 @@ export default {
 
   onInit() {
     const now = Date.now()
+    const monitorConfig = getMonitorConfig()
+    this.debugEndpointText = this.formatEndpoint(monitorConfig.url)
     this.fiveResetAt = now + 3 * 60 * 60 * 1000
     this.weekResetAt = now + 4 * 24 * 60 * 60 * 1000
     this.updatedAt = now
-    if (getMonitorConfig().url) {
+    if (monitorConfig.url) {
       // A configured watch must not present placeholder percentages as live data.
       this.fiveRemaining = 0
       this.weekRemaining = 0
@@ -394,6 +453,7 @@ export default {
     this.firstPageDotColor = nextIndex === 0 ? GREEN : '#3b443c'
     this.secondPageDotColor = nextIndex === 1 ? GREEN : '#3b443c'
     this.thirdPageDotColor = nextIndex === 2 ? GREEN : '#3b443c'
+    this.fourthPageDotColor = nextIndex === 3 ? GREEN : '#3b443c'
     this.showPageIndicator = true
     clearTimeout(this.pageIndicatorTimerId)
     this.pageIndicatorTimerId = setTimeout(() => {
@@ -426,6 +486,22 @@ export default {
         { time: 0, opacity: 0.65, transform: { translateY: '6px' } },
         { time: 100, opacity: 1, transform: { translateY: '0px' } }
       ], { id: 'task-completed-entrance', delay: 90, duration: 440, easing: 'ease-out', fill: 'forwards' })
+      return
+    }
+
+    if (index === 3) {
+      this.playElementAnimation('debugErrorCard', [
+        { time: 0, opacity: 0.55, transform: { translateY: '6px' } },
+        { time: 100, opacity: 1, transform: { translateY: '0px' } }
+      ], { id: 'debug-error-entrance', duration: 420, easing: 'ease-out', fill: 'forwards' })
+      this.playElementAnimation('debugInfoCard', [
+        { time: 0, opacity: 0.55, transform: { translateY: '6px' } },
+        { time: 100, opacity: 1, transform: { translateY: '0px' } }
+      ], { id: 'debug-info-entrance', delay: 80, duration: 420, easing: 'ease-out', fill: 'forwards' })
+      return
+    }
+
+    if (index !== 1) {
       return
     }
 
@@ -495,17 +571,26 @@ export default {
 
   refreshData() {
     const config = getMonitorConfig()
-    if (!config.url || this.requestInFlight) {
+    this.debugEndpointText = this.formatEndpoint(config.url)
+    if (!config.url) {
+      this.markOffline({ type: 'config', code: 0 })
+      return
+    }
+    if (this.requestInFlight) {
       return
     }
 
     this.requestInFlight = true
+    this.debugLastAttemptAt = Date.now()
+    this.debugStatusColor = GOLD
+    this.debugStatusText = '正在连接'
+    this.refreshDebugTime()
     requestSnapshot(config, {
-      success: (snapshot) => {
-        this.applySnapshot(snapshot)
+      success: (snapshot, code) => {
+        this.applySnapshot(snapshot, code)
       },
-      fail: () => {
-        this.markOffline()
+      fail: (error) => {
+        this.markOffline(error)
       },
       complete: () => {
         this.requestInFlight = false
@@ -513,9 +598,9 @@ export default {
     })
   },
 
-  applySnapshot(snapshot) {
+  applySnapshot(snapshot, responseCode) {
     if (!snapshot || !snapshot.quota) {
-      this.markOffline()
+      this.markOffline({ type: 'format', code: Number(responseCode || 0) })
       return
     }
 
@@ -555,6 +640,18 @@ export default {
     this.updatedAt = Number(snapshot.updatedAt || 0) * 1000 || Date.now()
     this.connectionState = 'online'
     this.sourceColor = fiveAvailable && weekAvailable ? GREEN : GOLD
+    this.debugLastSuccessAt = Date.now()
+    this.debugStatusColor = GREEN
+    this.debugStatusText = '连接正常'
+    this.debugErrorText = '暂无错误'
+    this.debugErrorDetail = 'HTTP ' + Number(responseCode || 200) + ' · 数据同步成功'
+    this.debugQuotaText = fiveAvailable && weekAvailable
+      ? '5h / 7d 正常'
+      : fiveAvailable
+        ? '仅 5h 可用'
+        : weekAvailable ? '仅 7d 可用' : '额度不可用'
+    this.debugTaskText = activityAvailable ? activeCount + ' 个正在运行' : '任务状态不可用'
+    this.refreshDebugTime()
     this.updateBars()
     this.usageEmptyText = '今天还没有 Token 消耗'
     this.updateUsageChart(usage.bars || [])
@@ -587,10 +684,44 @@ export default {
     }
   },
 
-  markOffline() {
+  markOffline(error) {
     this.sourceColor = '#E9877B'
     this.connectionState = 'offline'
     this.refreshText = '连接中断'
+    this.debugStatusColor = '#E9877B'
+    this.debugStatusText = '连接失败'
+    this.applyDebugError(error || { type: 'network', code: 0 })
+    this.refreshDebugTime()
+  },
+
+  applyDebugError(error) {
+    const type = error && error.type ? String(error.type) : 'network'
+    const code = Number(error && error.code || 0)
+    if (type === 'config') {
+      this.debugErrorText = '应用尚未配置'
+      this.debugErrorDetail = '重新生成配置并安装最新版本'
+      return
+    }
+    if (type === 'http') {
+      this.debugErrorText = 'HTTP ' + (code || '--')
+      if (code === 401 || code === 403) {
+        this.debugErrorDetail = '访问令牌不匹配，请安装最新版本'
+      } else if (code === 404) {
+        this.debugErrorDetail = '接口地址不存在，请检查域名路径'
+      } else if (code >= 500) {
+        this.debugErrorDetail = '电脑桥接或 Tunnel 暂时不可用'
+      } else {
+        this.debugErrorDetail = '服务器拒绝了本次请求'
+      }
+      return
+    }
+    if (type === 'format' || type === 'api') {
+      this.debugErrorText = type === 'format' ? '返回格式错误' : '接口返回错误'
+      this.debugErrorDetail = '接口已连接，但没有有效的状态数据'
+      return
+    }
+    this.debugErrorText = code ? '网络错误 ' + code : '网络请求失败'
+    this.debugErrorDetail = '检查手机联网、蓝牙连接和后台权限'
   },
 
   hasQuota(windowData) {
@@ -716,6 +847,27 @@ export default {
     this.refreshText = this.connectionState === 'offline'
       ? '连接中断'
       : this.formatRefresh(this.updatedAt)
+    this.refreshDebugTime()
+  },
+
+  refreshDebugTime() {
+    this.debugTimeText = '尝试 ' + this.formatShortTime(this.debugLastAttemptAt) +
+      ' · 成功 ' + this.formatShortTime(this.debugLastSuccessAt)
+  },
+
+  formatShortTime(timestamp) {
+    if (!timestamp) {
+      return '--:--'
+    }
+    const date = new Date(timestamp)
+    return this.pad(date.getHours()) + ':' + this.pad(date.getMinutes())
+  },
+
+  formatEndpoint(url) {
+    if (!url) {
+      return '未配置'
+    }
+    return String(url).replace(/^https?:\/\//i, '').split('/')[0]
   },
 
   formatModel(value) {
@@ -780,10 +932,10 @@ export default {
 
 .page-indicator {
   position: absolute;
-  top: 233px;
+  top: 224px;
   right: 11px;
   width: 8px;
-  height: 48px;
+  height: 66px;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
@@ -801,7 +953,8 @@ export default {
 
 .topbar,
 .usage-topbar,
-.task-topbar {
+.task-topbar,
+.debug-topbar {
   width: 100%;
   height: 44px;
   align-items: center;
@@ -816,7 +969,8 @@ export default {
 
 .clock-box,
 .usage-clock-box,
-.task-clock-box {
+.task-clock-box,
+.debug-clock-box {
   width: 55%;
   height: 40px;
   justify-content: flex-end;
@@ -1285,6 +1439,122 @@ export default {
 .task-footer-text {
   color: #8c8796;
   font-size: 16px;
+}
+
+.debug-screen {
+  padding-top: 28px;
+}
+
+.debug-page-title {
+  width: 45%;
+  color: @text-primary;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.debug-state-row {
+  width: 100%;
+  height: 30px;
+  margin-top: 14px;
+  align-items: center;
+}
+
+.debug-state-square {
+  width: 13px;
+  height: 13px;
+  margin-right: 12px;
+  border-radius: 3px;
+}
+
+.debug-state-text {
+  color: #c9cec6;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.debug-error-card {
+  width: 100%;
+  height: 112px;
+  margin-top: 10px;
+  padding-left: 13px;
+  padding-right: 13px;
+  padding-top: 10px;
+  flex-direction: column;
+  border-width: 1px;
+  border-color: #3a302d;
+  border-radius: 12px;
+  background-color: #171311;
+}
+
+.debug-card-label {
+  color: #9b938e;
+  font-size: 16px;
+}
+
+.debug-error-title {
+  width: 100%;
+  height: 30px;
+  margin-top: 4px;
+  color: #efeee9;
+  font-size: 21px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+}
+
+.debug-error-detail {
+  width: 100%;
+  margin-top: 3px;
+  color: #b9aea8;
+  font-size: 16px;
+  text-overflow: ellipsis;
+}
+
+.debug-info-card {
+  width: 100%;
+  height: 174px;
+  margin-top: 12px;
+  padding-left: 13px;
+  padding-right: 13px;
+  flex-direction: column;
+  border-width: 1px;
+  border-color: #283028;
+  border-radius: 12px;
+  background-color: #101510;
+}
+
+.debug-info-row {
+  width: 100%;
+  height: 42px;
+  align-items: center;
+}
+
+.debug-info-label {
+  width: 24%;
+  color: #8f978e;
+  font-size: 16px;
+}
+
+.debug-info-value {
+  width: 76%;
+  color: #d9dfd6;
+  font-size: 16px;
+  text-align: right;
+  text-overflow: ellipsis;
+}
+
+.debug-info-divider {
+  width: 100%;
+  height: 1px;
+  background-color: #252b25;
+}
+
+.debug-version {
+  width: 100%;
+  height: 24px;
+  margin-top: 14px;
+  color: #555b55;
+  font-size: 14px;
+  text-align: right;
 }
 
 </style>
