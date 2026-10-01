@@ -36,6 +36,26 @@ function parseSnapshot(raw) {
   }
 }
 
+function describeFailure(data) {
+  if (typeof data === 'string') {
+    return data.slice(0, 80)
+  }
+  if (!data || typeof data !== 'object') {
+    return ''
+  }
+  const message = data.message || data.errMsg || data.errorMessage || data.detail
+  return message ? String(message).slice(0, 80) : ''
+}
+
+function networkError(data, code) {
+  const errorCode = Number(code)
+  return {
+    type: 'network',
+    code: isNaN(errorCode) ? 0 : errorCode,
+    message: describeFailure(data)
+  }
+}
+
 // Keep request details in one place so the foreground page and the background
 // completion watcher always use the same URL, token header and validation.
 export function requestSnapshot(config, callbacks) {
@@ -53,7 +73,9 @@ export function requestSnapshot(config, callbacks) {
     url: config.url,
     method: 'GET',
     header: headers,
-    responseType: 'json',
+    // Text is more reliable across simulator and real-watch runtime versions.
+    // parseSnapshot still accepts an object if a runtime decodes JSON for us.
+    responseType: 'text',
     success: (response) => {
       const code = Number(response && response.code)
       const snapshot = parseSnapshot(response && response.data)
@@ -81,8 +103,7 @@ export function requestSnapshot(config, callbacks) {
     },
     fail: (data, code) => {
       if (handlers.fail) {
-        const errorCode = Number(code)
-        handlers.fail({ type: 'network', code: isNaN(errorCode) ? 0 : errorCode })
+        handlers.fail(networkError(data, code))
       }
     },
     complete: () => {
@@ -92,4 +113,35 @@ export function requestSnapshot(config, callbacks) {
     }
   })
   return true
+}
+
+// Lightweight request for the on-watch diagnostics page. No custom headers are
+// sent, so this separates basic connectivity from API authentication failures.
+export function probeUrl(url, callbacks) {
+  const handlers = callbacks || {}
+  fetch.fetch({
+    url: url,
+    method: 'GET',
+    responseType: 'text',
+    success: (response) => {
+      const code = Number(response && response.code)
+      if (code >= 200 && code < 400) {
+        if (handlers.success) {
+          handlers.success(code)
+        }
+      } else if (handlers.fail) {
+        handlers.fail({ type: 'http', code: isNaN(code) ? 0 : code })
+      }
+    },
+    fail: (data, code) => {
+      if (handlers.fail) {
+        handlers.fail(networkError(data, code))
+      }
+    },
+    complete: () => {
+      if (handlers.complete) {
+        handlers.complete()
+      }
+    }
+  })
 }

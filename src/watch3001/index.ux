@@ -140,7 +140,7 @@
         </div>
       </div>
 
-      <text class="usage-version">v1.0.15</text>
+      <text class="usage-version">v1.0.16</text>
 
     </div>
     <div class="screen task-screen">
@@ -216,12 +216,12 @@
         </div>
         <div class="debug-info-divider"></div>
         <div class="debug-info-row">
-          <text class="debug-info-label">任务</text>
-          <text class="debug-info-value" lines="1">{{debugTaskText}}</text>
+          <text class="debug-info-label">网络</text>
+          <text class="debug-info-value" lines="1">{{debugNetworkText}}</text>
         </div>
       </div>
 
-      <text class="debug-version">Codex Pulse · v1.0.15</text>
+      <text class="debug-version">Codex Pulse · v1.0.16</text>
     </div>
     </swiper>
     <div class="page-indicator" if="{{showPageIndicator}}">
@@ -239,6 +239,7 @@ import {
   LAST_COMPLETION_KEY,
   POLL_INTERVAL_MS,
   getMonitorConfig,
+  probeUrl,
   requestSnapshot
 } from '../shared/monitor.js'
 
@@ -258,11 +259,13 @@ export default {
       debugErrorText: '暂无错误',
       debugLastAttemptAt: 0,
       debugLastSuccessAt: 0,
+      debugNetworkText: '等待检测',
       debugQuotaText: '等待数据',
       debugStatusColor: GOLD,
       debugStatusText: '等待连接',
-      debugTaskText: '等待数据',
       debugTimeText: '尝试 --:-- · 成功 --:--',
+      diagnosticInFlight: false,
+      diagnosticLastAt: 0,
       fiveRemaining: 88,
       fiveRemainingText: '88%',
       fiveVisibleSegments: 0,
@@ -650,7 +653,8 @@ export default {
       : fiveAvailable
         ? '仅 5h 可用'
         : weekAvailable ? '仅 7d 可用' : '额度不可用'
-    this.debugTaskText = activityAvailable ? activeCount + ' 个正在运行' : '任务状态不可用'
+    this.debugNetworkText = '接口可达'
+    this.diagnosticInFlight = false
     this.refreshDebugTime()
     this.updateBars()
     this.usageEmptyText = '今天还没有 Token 消耗'
@@ -692,6 +696,9 @@ export default {
     this.debugStatusText = '连接失败'
     this.applyDebugError(error || { type: 'network', code: 0 })
     this.refreshDebugTime()
+    if (!error || !error.type || error.type === 'network') {
+      this.runNetworkDiagnostics(error || { type: 'network', code: 0 })
+    }
   },
 
   applyDebugError(error) {
@@ -720,8 +727,57 @@ export default {
       this.debugErrorDetail = '接口已连接，但没有有效的状态数据'
       return
     }
+    const message = error && error.message ? String(error.message) : ''
     this.debugErrorText = code ? '网络错误 ' + code : '网络请求失败'
-    this.debugErrorDetail = '检查手机联网、蓝牙连接和后台权限'
+    if (code === -6) {
+      this.debugErrorDetail = message || '正在检测应用网络与接口域名'
+    } else {
+      this.debugErrorDetail = message || '检查应用网络、域名和手机连接'
+    }
+  },
+
+  runNetworkDiagnostics(originalError) {
+    const now = Date.now()
+    if (this.diagnosticInFlight || now - this.diagnosticLastAt < 60000) {
+      return
+    }
+    this.diagnosticInFlight = true
+    this.diagnosticLastAt = now
+    this.debugNetworkText = '检测接口域名…'
+    const config = getMonitorConfig()
+    const healthUrl = this.healthUrl(config.url)
+    probeUrl(healthUrl, {
+      success: () => {
+        this.diagnosticInFlight = false
+        this.debugNetworkText = '域名可达'
+        this.debugErrorDetail = '健康接口正常，问题在 API 请求或请求头'
+      },
+      fail: (healthError) => {
+        this.debugNetworkText = '检测普通公网…'
+        probeUrl('https://www.baidu.com/robots.txt', {
+          success: () => {
+            this.diagnosticInFlight = false
+            this.debugNetworkText = '公网正常 · 域名失败'
+            this.debugErrorDetail = '普通公网可用，请检查域名 DNS 或 TLS'
+          },
+          fail: (publicError) => {
+            this.diagnosticInFlight = false
+            const code = Number(publicError && publicError.code || originalError && originalError.code || 0)
+            this.debugNetworkText = code ? '本应用无公网 (' + code + ')' : '本应用无公网'
+            this.debugErrorDetail = '其他应用联网不代表调试应用已获得网络通道'
+          }
+        })
+      }
+    })
+  },
+
+  healthUrl(apiUrl) {
+    const url = String(apiUrl || '')
+    const apiIndex = url.indexOf('/api/')
+    if (apiIndex > 0) {
+      return url.slice(0, apiIndex) + '/health'
+    }
+    return 'https://watch.lmc222.site/health'
   },
 
   hasQuota(windowData) {
