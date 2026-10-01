@@ -35,12 +35,12 @@
 
 必须设置至少 32 个字符的随机 Token，避免公开地址被他人读取；桥接程序缺少 Token 时会拒绝启动：
 
-在这台已安装 Codex Desktop 且代理位于 `127.0.0.1:7897` 的 Windows 电脑上，可直接运行 `./scripts/start-bridge.ps1`。它会在本机用户目录生成并保存随机 Token，以隐藏窗口启动桥接，然后输出额度与任务状态；如果同一桥接已在运行，脚本会直接复用。不要把令牌文件发送给别人或提交到仓库。
+在这台已安装 Codex Desktop 且代理位于 `127.0.0.1:7897` 的 Windows 电脑上，可直接运行 `./scripts/start-bridge.cmd`。它会仅对本次启动绕过 PowerShell 脚本策略，再调用 `start-bridge.ps1`；不会永久修改系统执行策略。桥接会在本机用户目录生成并保存随机 Token，以隐藏窗口启动，然后输出额度与任务状态；如果同一桥接已在运行，脚本会直接复用。不要把令牌文件发送给别人或提交到仓库。
 
 代理或端口变化时可以直接传参，也可以用 `CODEX_WATCH_PROXY` 环境变量设置代理：
 
 ```powershell
-.\scripts\start-bridge.ps1 -ProxyUrl 'http://127.0.0.1:7897' -Port 8765
+.\scripts\start-bridge.cmd -ProxyUrl 'http://127.0.0.1:7897' -Port 8765
 ```
 
 ```powershell
