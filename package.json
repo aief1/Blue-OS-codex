@@ -1,0 +1,9 @@
+{
+  "name": "my-application-1",
+  "version": "1.0.14",
+  "private": true,
+  "description": "Codex quota and activity monitor for vivo WATCH GT 2",
+  "scripts": {
+    "test:bridge": "python -m unittest discover -s bridge -p test_*.py -v"
+  }
+}

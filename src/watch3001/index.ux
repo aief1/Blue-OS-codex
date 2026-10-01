@@ -1,0 +1,1278 @@
+<template>
+  <div class="page">
+    <swiper class="page-swiper" vertical="true" indicator="false" onchange="onPageChange">
+    <div class="screen quota-screen">
+      <div class="topbar">
+        <text class="app-name">Codex</text>
+        <div class="clock-box" onclick="refreshData">
+          <div class="clock-ring"></div>
+          <text class="top-clock">{{clockText}}</text>
+        </div>
+      </div>
+
+      <div class="meter meter-five">
+        <div class="meter-heading">
+          <text class="meter-label meter-label-five">5 小时</text>
+          <text class="meter-value meter-value-five">{{fiveRemainingText}}</text>
+        </div>
+        <div class="segments" id="fiveSegments">
+            <div class="segment" style="background-color: {{fiveSegment1}}"></div>
+            <div class="segment" style="background-color: {{fiveSegment2}}"></div>
+            <div class="segment" style="background-color: {{fiveSegment3}}"></div>
+            <div class="segment" style="background-color: {{fiveSegment4}}"></div>
+            <div class="segment" style="background-color: {{fiveSegment5}}"></div>
+            <div class="segment" style="background-color: {{fiveSegment6}}"></div>
+            <div class="segment" style="background-color: {{fiveSegment7}}"></div>
+            <div class="segment" style="background-color: {{fiveSegment8}}"></div>
+            <div class="segment" style="background-color: {{fiveSegment9}}"></div>
+            <div class="segment" style="background-color: {{fiveSegment10}}"></div>
+            <div class="segment" style="background-color: {{fiveSegment11}}"></div>
+            <div class="segment" style="background-color: {{fiveSegment12}}"></div>
+            <div class="segment" style="background-color: {{fiveSegment13}}"></div>
+            <div class="segment segment-last" style="background-color: {{fiveSegment14}}"></div>
+        </div>
+        <div class="meter-caption">
+          <text class="caption-muted">剩余</text>
+          <text class="caption-muted caption-right">已用 {{fiveUsedText}}</text>
+        </div>
+      </div>
+
+      <div class="meter meter-week">
+        <div class="meter-heading">
+          <text class="meter-label meter-label-week">7 天</text>
+          <text class="meter-value meter-value-week">{{weekRemainingText}}</text>
+        </div>
+        <div class="segments" id="weekSegments">
+            <div class="segment" style="background-color: {{weekSegment1}}"></div>
+            <div class="segment" style="background-color: {{weekSegment2}}"></div>
+            <div class="segment" style="background-color: {{weekSegment3}}"></div>
+            <div class="segment" style="background-color: {{weekSegment4}}"></div>
+            <div class="segment" style="background-color: {{weekSegment5}}"></div>
+            <div class="segment" style="background-color: {{weekSegment6}}"></div>
+            <div class="segment" style="background-color: {{weekSegment7}}"></div>
+            <div class="segment" style="background-color: {{weekSegment8}}"></div>
+            <div class="segment" style="background-color: {{weekSegment9}}"></div>
+            <div class="segment" style="background-color: {{weekSegment10}}"></div>
+            <div class="segment" style="background-color: {{weekSegment11}}"></div>
+            <div class="segment" style="background-color: {{weekSegment12}}"></div>
+            <div class="segment" style="background-color: {{weekSegment13}}"></div>
+            <div class="segment segment-last" style="background-color: {{weekSegment14}}"></div>
+        </div>
+        <div class="meter-caption">
+          <text class="caption-muted">剩余</text>
+          <text class="caption-muted caption-right">已用 {{weekUsedText}}</text>
+        </div>
+      </div>
+
+      <div class="reset-row">
+        <div class="reset-card reset-card-left">
+          <text class="reset-label">重置 (5h)</text>
+          <text class="reset-time reset-time-five">{{fiveResetCardText}}</text>
+        </div>
+        <div class="reset-card">
+          <text class="reset-label">重置 (7d)</text>
+          <text class="reset-time reset-time-week">{{weekResetCardText}}</text>
+        </div>
+      </div>
+
+      <div class="dashboard-footer">
+        <div class="footer-model">
+          <div class="source-square" style="background-color: {{sourceColor}}"></div>
+          <text class="footer-brand">{{modelText}}</text>
+        </div>
+        <text class="footer-refresh">{{refreshText}}</text>
+      </div>
+
+    </div>
+
+    <div class="screen usage-screen">
+      <div class="usage-topbar">
+        <text class="usage-kicker">今日用量</text>
+        <div class="usage-clock-box">
+          <div class="clock-ring"></div>
+          <text class="top-clock">{{clockText}}</text>
+        </div>
+      </div>
+
+      <div class="usage-total-block" id="usageTotalBlock">
+        <text class="usage-total" lines="1">{{todayTokensText}}</text>
+        <text class="usage-unit">tokens</text>
+      </div>
+      <text class="usage-range">仅显示有用量的时段</text>
+
+      <div class="usage-chart" id="usageChart">
+        <div class="usage-empty" if="{{showUsageEmpty}}">
+          <div class="usage-empty-line"></div>
+          <text class="usage-empty-text">{{usageEmptyText}}</text>
+        </div>
+        <div class="usage-bar" if="{{usageBar1Visible}}" style="width: {{usageBarWidth}}px; margin-right: {{usageBarGap}}px; height: {{usageBar1Height}}px; background-color: {{usageBar1Color}}"></div>
+        <div class="usage-bar" if="{{usageBar2Visible}}" style="width: {{usageBarWidth}}px; margin-right: {{usageBarGap}}px; height: {{usageBar2Height}}px; background-color: {{usageBar2Color}}"></div>
+        <div class="usage-bar" if="{{usageBar3Visible}}" style="width: {{usageBarWidth}}px; margin-right: {{usageBarGap}}px; height: {{usageBar3Height}}px; background-color: {{usageBar3Color}}"></div>
+        <div class="usage-bar" if="{{usageBar4Visible}}" style="width: {{usageBarWidth}}px; margin-right: {{usageBarGap}}px; height: {{usageBar4Height}}px; background-color: {{usageBar4Color}}"></div>
+        <div class="usage-bar" if="{{usageBar5Visible}}" style="width: {{usageBarWidth}}px; margin-right: {{usageBarGap}}px; height: {{usageBar5Height}}px; background-color: {{usageBar5Color}}"></div>
+        <div class="usage-bar" if="{{usageBar6Visible}}" style="width: {{usageBarWidth}}px; margin-right: {{usageBarGap}}px; height: {{usageBar6Height}}px; background-color: {{usageBar6Color}}"></div>
+        <div class="usage-bar" if="{{usageBar7Visible}}" style="width: {{usageBarWidth}}px; margin-right: {{usageBarGap}}px; height: {{usageBar7Height}}px; background-color: {{usageBar7Color}}"></div>
+        <div class="usage-bar" if="{{usageBar8Visible}}" style="width: {{usageBarWidth}}px; margin-right: {{usageBarGap}}px; height: {{usageBar8Height}}px; background-color: {{usageBar8Color}}"></div>
+        <div class="usage-bar" if="{{usageBar9Visible}}" style="width: {{usageBarWidth}}px; margin-right: {{usageBarGap}}px; height: {{usageBar9Height}}px; background-color: {{usageBar9Color}}"></div>
+        <div class="usage-bar" if="{{usageBar10Visible}}" style="width: {{usageBarWidth}}px; margin-right: {{usageBarGap}}px; height: {{usageBar10Height}}px; background-color: {{usageBar10Color}}"></div>
+        <div class="usage-bar" if="{{usageBar11Visible}}" style="width: {{usageBarWidth}}px; margin-right: {{usageBarGap}}px; height: {{usageBar11Height}}px; background-color: {{usageBar11Color}}"></div>
+        <div class="usage-bar" if="{{usageBar12Visible}}" style="width: {{usageBarWidth}}px; margin-right: {{usageBarGap}}px; height: {{usageBar12Height}}px; background-color: {{usageBar12Color}}"></div>
+      </div>
+
+      <div class="usage-axis">
+        <text class="axis-label">{{usageFirstTimeText}}</text>
+        <text class="axis-label axis-peak">{{usageAxisMiddleText}}</text>
+        <text class="axis-label axis-now">{{usageLastTimeText}}</text>
+      </div>
+
+      <div class="token-summary">
+        <div class="token-stat">
+          <text class="token-stat-label token-input">in</text>
+          <text class="token-stat-value token-input">{{inputTokensText}}</text>
+        </div>
+        <div class="token-stat">
+          <text class="token-stat-label token-output">out</text>
+          <text class="token-stat-value token-output">{{outputTokensText}}</text>
+        </div>
+        <div class="token-stat">
+          <text class="token-stat-label token-cache">cache</text>
+          <text class="token-stat-value token-cache">{{cachedTokensText}}</text>
+        </div>
+      </div>
+
+    </div>
+    <div class="screen task-screen">
+      <div class="task-topbar">
+        <text class="task-page-title">任务动态</text>
+        <div class="task-clock-box">
+          <div class="clock-ring"></div>
+          <text class="top-clock">{{clockText}}</text>
+        </div>
+      </div>
+
+      <div class="task-state-row">
+        <div class="task-state-square" style="background-color: {{taskStateColor}}"></div>
+        <text class="task-state-text">{{taskStateText}}</text>
+      </div>
+      <div class="task-count-row">
+        <text class="task-count" lines="1">{{taskCountText}}</text>
+        <text class="task-count-unit">个任务正在执行</text>
+      </div>
+
+      <div class="task-running-card" id="taskRunningCard">
+        <text class="task-card-label">当前任务</text>
+        <text class="task-running-title" lines="2">{{taskRunningTitle}}</text>
+      </div>
+
+      <div class="task-divider"></div>
+      <text class="task-recent-heading">最近完成</text>
+      <div class="task-completed-card" id="taskCompletedCard">
+        <text class="task-completed-title" lines="2">{{taskLastTitle}}</text>
+        <text class="task-completed-time">{{taskLastTimeText}}</text>
+      </div>
+
+      <div class="task-footer">
+        <div class="task-footer-square" style="background-color: {{sourceColor}}"></div>
+        <text class="task-footer-text">{{refreshText}}</text>
+      </div>
+    </div>
+    </swiper>
+    <div class="page-indicator" if="{{showPageIndicator}}">
+      <div class="page-dot" style="background-color: {{firstPageDotColor}}"></div>
+      <div class="page-dot" style="background-color: {{secondPageDotColor}}"></div>
+      <div class="page-dot" style="background-color: {{thirdPageDotColor}}"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+import storage from '@blueos.storage.storage'
+import {
+  LAST_COMPLETION_KEY,
+  POLL_INTERVAL_MS,
+  getMonitorConfig,
+  requestSnapshot
+} from '../shared/monitor.js'
+
+const METER_SEGMENTS = 14
+const GREEN = '#B4E5A0'
+const GOLD = '#E7D28B'
+const GREEN_TRACK = '#273329'
+const GOLD_TRACK = '#343023'
+
+export default {
+  data() {
+    return {
+      cachedTokensText: '18.6M',
+      clockText: '--:--',
+      fiveRemaining: 88,
+      fiveRemainingText: '88%',
+      fiveVisibleSegments: 0,
+      fiveResetAt: 0,
+      fiveResetCardText: '--/-- --:--',
+      fiveSegment1: GREEN_TRACK,
+      fiveSegment2: GREEN_TRACK,
+      fiveSegment3: GREEN_TRACK,
+      fiveSegment4: GREEN_TRACK,
+      fiveSegment5: GREEN_TRACK,
+      fiveSegment6: GREEN_TRACK,
+      fiveSegment7: GREEN_TRACK,
+      fiveSegment8: GREEN_TRACK,
+      fiveSegment9: GREEN_TRACK,
+      fiveSegment10: GREEN_TRACK,
+      fiveSegment11: GREEN_TRACK,
+      fiveSegment12: GREEN_TRACK,
+      fiveSegment13: GREEN_TRACK,
+      fiveSegment14: GREEN_TRACK,
+      fiveUsedText: '12%',
+      firstPageDotColor: GREEN,
+      inputTokensText: '22.5M',
+      initialAnimationTimerId: -1,
+      outputTokensText: '74.3K',
+      pageIndex: 0,
+      pageIndicatorTimerId: -1,
+      pollTimerId: -1,
+      requestInFlight: false,
+      connectionState: 'demo',
+      fiveFillTimerId: -1,
+      modelText: 'GPT-5.6',
+      refreshText: '刷新 --:--',
+      sourceColor: GREEN,
+      secondPageDotColor: '#3b443c',
+      showPageIndicator: false,
+      showUsageEmpty: false,
+      taskCountText: '0',
+      taskLastTitle: '尚无完成记录',
+      taskLastTimeText: '完成后会显示在这里',
+      taskRunningTitle: '等待新任务',
+      taskStateColor: '#606a60',
+      taskStateText: '当前空闲',
+      thirdPageDotColor: '#3b443c',
+      tickTimerId: -1,
+      todayTokensText: '22.6M',
+      updatedAt: 0,
+      usageBar1Color: '#2f813e',
+      usageBar1Height: 51,
+      usageBar1Visible: true,
+      usageBar2Color: '#2f813e',
+      usageBar2Height: 41,
+      usageBar2Visible: true,
+      usageBar3Color: '#2f813e',
+      usageBar3Height: 36,
+      usageBar3Visible: true,
+      usageBar4Color: '#2f813e',
+      usageBar4Height: 110,
+      usageBar4Visible: true,
+      usageBar5Color: '#2f813e',
+      usageBar5Height: 47,
+      usageBar5Visible: true,
+      usageBar6Color: '#2f813e',
+      usageBar6Height: 60,
+      usageBar6Visible: true,
+      usageBar7Color: '#b9ff86',
+      usageBar7Height: 152,
+      usageBar7Visible: true,
+      usageBar8Color: '#2f813e',
+      usageBar8Height: 106,
+      usageBar8Visible: true,
+      usageBar9Color: '#2f813e',
+      usageBar9Height: 100,
+      usageBar9Visible: true,
+      usageBar10Color: '#2f813e',
+      usageBar10Height: 45,
+      usageBar10Visible: true,
+      usageBar11Color: '#2f813e',
+      usageBar11Height: 64,
+      usageBar11Visible: true,
+      usageBar12Color: '#2f813e',
+      usageBar12Height: 54,
+      usageBar12Visible: true,
+      usageBarWidth: 27,
+      usageBarGap: 5,
+      usageAxisMiddleText: '峰值 12:00',
+      usageEmptyText: '今天还没有 Token 消耗',
+      usageFirstTimeText: '0h',
+      usageLastTimeText: 'now',
+      usagePeakText: '12:00',
+      weekRemaining: 17,
+      weekRemainingText: '17%',
+      weekVisibleSegments: 0,
+      weekFillTimerId: -1,
+      weekResetAt: 0,
+      weekResetCardText: '--/-- --:--',
+      weekSegment1: GOLD_TRACK,
+      weekSegment2: GOLD_TRACK,
+      weekSegment3: GOLD_TRACK,
+      weekSegment4: GOLD_TRACK,
+      weekSegment5: GOLD_TRACK,
+      weekSegment6: GOLD_TRACK,
+      weekSegment7: GOLD_TRACK,
+      weekSegment8: GOLD_TRACK,
+      weekSegment9: GOLD_TRACK,
+      weekSegment10: GOLD_TRACK,
+      weekSegment11: GOLD_TRACK,
+      weekSegment12: GOLD_TRACK,
+      weekSegment13: GOLD_TRACK,
+      weekSegment14: GOLD_TRACK,
+      weekUsedText: '83%'
+    }
+  },
+
+  onInit() {
+    const now = Date.now()
+    this.fiveResetAt = now + 3 * 60 * 60 * 1000
+    this.weekResetAt = now + 4 * 24 * 60 * 60 * 1000
+    this.updatedAt = now
+    if (getMonitorConfig().url) {
+      // A configured watch must not present placeholder percentages as live data.
+      this.fiveRemaining = 0
+      this.weekRemaining = 0
+      this.fiveRemainingText = '--'
+      this.weekRemainingText = '--'
+      this.fiveUsedText = '--'
+      this.weekUsedText = '--'
+      this.fiveResetAt = 0
+      this.weekResetAt = 0
+      this.updatedAt = 0
+      this.todayTokensText = '--'
+      this.inputTokensText = '--'
+      this.outputTokensText = '--'
+      this.cachedTokensText = '--'
+      this.modelText = 'Codex'
+      this.sourceColor = GOLD
+      this.connectionState = 'loading'
+      this.usageEmptyText = '等待数据同步'
+      this.updateUsageChart([])
+    }
+    this.refreshClock()
+    this.refreshLabels()
+    this.updateBars()
+  },
+
+  onReady() {
+    this.refreshLastCompletion()
+    this.initialAnimationTimerId = setTimeout(() => {
+      if (this.pageIndex === 0) {
+        this.playPageEntrance(0)
+      }
+    }, 120)
+    this.tickTimerId = setInterval(() => {
+      this.refreshClock()
+      this.refreshLabels()
+    }, 1000)
+    this.refreshData()
+    this.pollTimerId = setInterval(() => {
+      this.refreshData()
+    }, POLL_INTERVAL_MS)
+  },
+
+  onDestroy() {
+    clearInterval(this.tickTimerId)
+    clearInterval(this.pollTimerId)
+    clearTimeout(this.initialAnimationTimerId)
+    clearTimeout(this.pageIndicatorTimerId)
+    clearTimeout(this.fiveFillTimerId)
+    clearTimeout(this.weekFillTimerId)
+  },
+
+  onPageChange(event) {
+    const nextIndex = Number(event && event.index)
+    if (isNaN(nextIndex) || nextIndex === this.pageIndex) {
+      return
+    }
+    this.pageIndex = nextIndex
+    clearTimeout(this.initialAnimationTimerId)
+    if (nextIndex !== 0) {
+      clearTimeout(this.fiveFillTimerId)
+      clearTimeout(this.weekFillTimerId)
+      this.fiveVisibleSegments = METER_SEGMENTS
+      this.weekVisibleSegments = METER_SEGMENTS
+      this.updateBars()
+    }
+    this.firstPageDotColor = nextIndex === 0 ? GREEN : '#3b443c'
+    this.secondPageDotColor = nextIndex === 1 ? GREEN : '#3b443c'
+    this.thirdPageDotColor = nextIndex === 2 ? GREEN : '#3b443c'
+    this.showPageIndicator = true
+    clearTimeout(this.pageIndicatorTimerId)
+    this.pageIndicatorTimerId = setTimeout(() => {
+      this.showPageIndicator = false
+    }, 900)
+    if (nextIndex === 2) {
+      this.refreshLastCompletion()
+    }
+    this.playPageEntrance(nextIndex)
+  },
+
+  playPageEntrance(index) {
+    if (index === 0) {
+      clearTimeout(this.fiveFillTimerId)
+      clearTimeout(this.weekFillTimerId)
+      this.fiveVisibleSegments = 0
+      this.weekVisibleSegments = 0
+      this.updateBars()
+      this.animateMeterFill('five', this.fiveRemaining, 30)
+      this.animateMeterFill('week', this.weekRemaining, 130)
+      return
+    }
+
+    if (index === 2) {
+      this.playElementAnimation('taskRunningCard', [
+        { time: 0, opacity: 0.65, transform: { translateY: '6px' } },
+        { time: 100, opacity: 1, transform: { translateY: '0px' } }
+      ], { id: 'task-running-entrance', duration: 440, easing: 'ease-out', fill: 'forwards' })
+      this.playElementAnimation('taskCompletedCard', [
+        { time: 0, opacity: 0.65, transform: { translateY: '6px' } },
+        { time: 100, opacity: 1, transform: { translateY: '0px' } }
+      ], { id: 'task-completed-entrance', delay: 90, duration: 440, easing: 'ease-out', fill: 'forwards' })
+      return
+    }
+
+    this.playElementAnimation('usageTotalBlock', [
+      { time: 0, opacity: 0.55, transform: { translateY: '5px' } },
+      { time: 100, opacity: 1, transform: { translateY: '0px' } }
+    ], { id: 'usage-total-entrance', duration: 460, easing: 'ease-out', fill: 'forwards' })
+
+    if (!this.showUsageEmpty) {
+      this.playElementAnimation('usageChart', [
+        { time: 0, opacity: 0.7, transform: { scaleY: 0.16 }, transformOrigin: '50% 100%' },
+        { time: 100, opacity: 1, transform: { scaleY: 1 }, transformOrigin: '50% 100%' }
+      ], { id: 'usage-chart-entrance', duration: 620, easing: 'ease-out', fill: 'forwards' })
+    }
+  },
+
+  animateMeterFill(kind, remainingPercent, firstDelay) {
+    const target = Math.round(remainingPercent * METER_SEGMENTS / 100)
+    if (target === 0) {
+      return
+    }
+    const interval = target <= 2 ? 170 : Math.max(38, Math.floor(500 / target))
+    const lightNext = (count) => {
+      if (kind === 'five') {
+        this.fiveVisibleSegments = count
+      } else {
+        this.weekVisibleSegments = count
+      }
+      this.updateBars()
+      if (count < target) {
+        const timer = setTimeout(() => { lightNext(count + 1) }, interval)
+        if (kind === 'five') {
+          this.fiveFillTimerId = timer
+        } else {
+          this.weekFillTimerId = timer
+        }
+      } else {
+        if (kind === 'five') {
+          this.fiveVisibleSegments = METER_SEGMENTS
+        } else {
+          this.weekVisibleSegments = METER_SEGMENTS
+        }
+        this.updateBars()
+      }
+    }
+    const timer = setTimeout(() => { lightNext(1) }, firstDelay)
+    if (kind === 'five') {
+      this.fiveFillTimerId = timer
+    } else {
+      this.weekFillTimerId = timer
+    }
+  },
+
+  playElementAnimation(elementId, keyframes, options) {
+    try {
+      const element = this.$element(elementId)
+      if (element && typeof element.animate === 'function') {
+        const animation = element.animate(keyframes, options)
+        animation.play()
+        return true
+      }
+    } catch (error) {
+      // Older watch runtimes can ignore the embellishment without hiding the data.
+    }
+    return false
+  },
+
+  refreshData() {
+    const config = getMonitorConfig()
+    if (!config.url || this.requestInFlight) {
+      return
+    }
+
+    this.requestInFlight = true
+    requestSnapshot(config, {
+      success: (snapshot) => {
+        this.applySnapshot(snapshot)
+      },
+      fail: () => {
+        this.markOffline()
+      },
+      complete: () => {
+        this.requestInFlight = false
+      }
+    })
+  },
+
+  applySnapshot(snapshot) {
+    if (!snapshot || !snapshot.quota) {
+      this.markOffline()
+      return
+    }
+
+    const fiveHour = snapshot.quota.fiveHour || {}
+    const weekly = snapshot.quota.weekly || {}
+    const usage = snapshot.usage || {}
+    const activity = snapshot.activity || {}
+    const activeItems = Array.isArray(activity.items) ? activity.items : []
+    const countValue = Number(activity.count || activeItems.length || (activity.running ? 1 : 0))
+    const activeCount = isNaN(countValue) ? 0 : Math.max(0, Math.floor(countValue))
+
+    const fiveAvailable = this.hasQuota(fiveHour)
+    const weekAvailable = this.hasQuota(weekly)
+    this.fiveRemaining = fiveAvailable ? this.clampPercent(fiveHour.remainingPercent) : 0
+    this.weekRemaining = weekAvailable ? this.clampPercent(weekly.remainingPercent) : 0
+    this.fiveRemainingText = fiveAvailable ? this.fiveRemaining + '%' : '--'
+    this.weekRemainingText = weekAvailable ? this.weekRemaining + '%' : '--'
+    this.fiveUsedText = fiveAvailable ? (100 - this.fiveRemaining) + '%' : '--'
+    this.weekUsedText = weekAvailable ? (100 - this.weekRemaining) + '%' : '--'
+    this.fiveResetAt = Number(fiveHour.resetsAt || 0) * 1000
+    this.weekResetAt = Number(weekly.resetsAt || 0) * 1000
+    this.todayTokensText = this.formatTokens(usage.todayTokens)
+    this.inputTokensText = this.formatTokens(usage.inputTokens)
+    this.outputTokensText = this.formatTokens(usage.outputTokens)
+    this.cachedTokensText = this.formatTokens(usage.cachedTokens)
+    this.usagePeakText = usage.peakLabel || '--:--'
+    this.modelText = this.formatModel(usage.currentModel || snapshot.currentModel)
+    const activityAvailable = activity.available !== false
+    this.taskCountText = activityAvailable ? String(activeCount) : '--'
+    this.taskStateText = activityAvailable ? (activeCount > 0 ? '正在运行' : '当前空闲') : '状态未知'
+    this.taskStateColor = activityAvailable && activeCount > 0 ? GREEN : '#606a60'
+    this.taskRunningTitle = !activityAvailable
+      ? '无法读取任务状态'
+      : activeCount > 0
+        ? String((activeItems[0] && activeItems[0].title) || activity.title || 'Codex 任务')
+        : '等待新任务'
+    this.updatedAt = Number(snapshot.updatedAt || 0) * 1000 || Date.now()
+    this.connectionState = 'online'
+    this.sourceColor = fiveAvailable && weekAvailable ? GREEN : GOLD
+    this.updateBars()
+    this.usageEmptyText = '今天还没有 Token 消耗'
+    this.updateUsageChart(usage.bars || [])
+    this.refreshLastCompletion()
+    this.refreshLabels()
+  },
+
+  refreshLastCompletion() {
+    try {
+      const raw = storage.getSync({ key: LAST_COMPLETION_KEY })
+      if (!raw) {
+        return
+      }
+      const completion = JSON.parse(String(raw))
+      const timestamp = Number(completion.completedAt || 0)
+      const completedAt = new Date(timestamp)
+      if (!completion.title || !timestamp || isNaN(completedAt.getTime())) {
+        return
+      }
+      this.taskLastTitle = String(completion.title)
+      const now = new Date()
+      const time = this.pad(completedAt.getHours()) + ':' + this.pad(completedAt.getMinutes())
+      const sameDay = now.getFullYear() === completedAt.getFullYear() &&
+        now.getMonth() === completedAt.getMonth() && now.getDate() === completedAt.getDate()
+      this.taskLastTimeText = sameDay
+        ? '今天 ' + time
+        : this.pad(completedAt.getMonth() + 1) + '/' + this.pad(completedAt.getDate()) + ' ' + time
+    } catch (error) {
+      // An incomplete local record should not affect live quota and task status.
+    }
+  },
+
+  markOffline() {
+    this.sourceColor = '#E9877B'
+    this.connectionState = 'offline'
+    this.refreshText = '连接中断'
+  },
+
+  hasQuota(windowData) {
+    return windowData.remainingPercent !== null && windowData.remainingPercent !== undefined
+  },
+
+  clampPercent(value) {
+    const numberValue = Number(value)
+    if (isNaN(numberValue)) {
+      return 0
+    }
+    return Math.max(0, Math.min(100, Math.round(numberValue)))
+  },
+
+  updateBars() {
+    const fiveDisplayPercent = Math.min(this.fiveRemaining, this.fiveVisibleSegments * 100 / METER_SEGMENTS)
+    const weekDisplayPercent = Math.min(this.weekRemaining, this.weekVisibleSegments * 100 / METER_SEGMENTS)
+    this.updateSegmentRow('fiveSegment', fiveDisplayPercent, GREEN)
+    this.updateSegmentRow('weekSegment', weekDisplayPercent, GOLD)
+  },
+
+  updateSegmentRow(prefix, percent, activeColor) {
+    for (let index = 1; index <= METER_SEGMENTS; index++) {
+      this[prefix + index] = this.segmentColor(percent, index, activeColor, METER_SEGMENTS)
+    }
+  },
+
+  updateUsageChart(values) {
+    const bars = []
+    let maximum = 0
+    let peakIndex = -1
+    let firstActiveIndex = -1
+    let lastActiveIndex = -1
+    let activeCount = 0
+    for (let index = 0; index < 12; index++) {
+      const value = Math.max(0, Number(values[index] || 0))
+      bars.push(value)
+      if (value > 0) {
+        if (firstActiveIndex < 0) {
+          firstActiveIndex = index
+        }
+        lastActiveIndex = index
+        activeCount++
+      }
+      if (value > maximum) {
+        maximum = value
+        peakIndex = index
+      }
+    }
+
+    const display = []
+    for (let index = 0; index < 12; index++) {
+      const height = maximum > 0 && bars[index] > 0
+        ? 18 + Math.round(bars[index] / maximum * 134)
+        : 8
+      display.push({
+        height: height,
+        color: index === peakIndex ? '#b9ff86' : (bars[index] > 0 ? '#2f813e' : '#172019')
+      })
+    }
+
+    this.showUsageEmpty = maximum === 0
+    this.usageAxisMiddleText = maximum === 0 ? '等待首次使用' : '峰值 ' + this.usagePeakText
+    const now = new Date()
+    const elapsedMinutes = Math.max(1, now.getHours() * 60 + now.getMinutes() + 1)
+    this.usageFirstTimeText = firstActiveIndex < 0
+      ? '--:--' : this.formatChartMinute(Math.floor(firstActiveIndex * elapsedMinutes / 12))
+    this.usageLastTimeText = lastActiveIndex < 0
+      ? '--:--' : this.formatChartMinute(Math.min(elapsedMinutes, Math.ceil((lastActiveIndex + 1) * elapsedMinutes / 12)))
+    this.usageBarGap = activeCount <= 8 ? 8 : 5
+    this.usageBarWidth = activeCount > 0
+      ? Math.min(48, Math.floor((376 - activeCount * this.usageBarGap) / activeCount))
+      : 27
+    for (let index = 0; index < 12; index++) {
+      const number = index + 1
+      this['usageBar' + number + 'Height'] = display[index].height
+      this['usageBar' + number + 'Color'] = display[index].color
+      this['usageBar' + number + 'Visible'] = bars[index] > 0
+    }
+  },
+
+  formatChartMinute(minutes) {
+    const safeMinutes = Math.max(0, Math.min(1439, minutes))
+    return this.pad(Math.floor(safeMinutes / 60)) + ':' + this.pad(safeMinutes % 60)
+  },
+
+  formatTokens(value) {
+    if (value === null || value === undefined || value === '') {
+      return '--'
+    }
+    const numberValue = Number(value)
+    if (isNaN(numberValue)) {
+      return '--'
+    }
+    const tokens = Math.max(0, numberValue)
+    if (tokens >= 1000000000) {
+      return (tokens / 1000000000).toFixed(1) + 'G'
+    }
+    if (tokens >= 1000000) {
+      return (tokens / 1000000).toFixed(1) + 'M'
+    }
+    if (tokens >= 1000) {
+      return (tokens / 1000).toFixed(1) + 'K'
+    }
+    return Math.round(tokens) + ''
+  },
+
+  segmentColor(percent, index, activeColor, total) {
+    // Draw the dark track in each cell; the runtime does not reliably space
+    // or overlay two separate rows of watch-sized segments.
+    const trackColor = activeColor === GOLD ? GOLD_TRACK : GREEN_TRACK
+    return Math.round(percent * total / 100) >= index ? activeColor : trackColor
+  },
+
+  refreshClock() {
+    const now = new Date()
+    this.clockText = this.pad(now.getHours()) + ':' + this.pad(now.getMinutes())
+  },
+
+  refreshLabels() {
+    this.fiveResetCardText = this.formatResetCard(this.fiveResetAt)
+    this.weekResetCardText = this.formatResetCard(this.weekResetAt)
+    this.refreshText = this.connectionState === 'offline'
+      ? '连接中断'
+      : this.formatRefresh(this.updatedAt)
+  },
+
+  formatModel(value) {
+    if (!value) {
+      return this.modelText || 'GPT'
+    }
+    const match = String(value).match(/gpt-([0-9]+(?:\.[0-9]+)?)/i)
+    return match ? 'GPT-' + match[1] : String(value).toUpperCase()
+  },
+
+  formatRefresh(timestamp) {
+    if (!timestamp) {
+      return '刷新 --:--'
+    }
+    const date = new Date(timestamp)
+    return '刷新 ' + this.pad(date.getHours()) + ':' + this.pad(date.getMinutes())
+  },
+
+  formatResetCard(timestamp) {
+    if (!timestamp) {
+      return '--/-- --:--'
+    }
+    const date = new Date(timestamp)
+    return this.pad(date.getMonth() + 1) + '/' + this.pad(date.getDate()) + ' ' +
+      this.pad(date.getHours()) + ':' + this.pad(date.getMinutes())
+  },
+
+  pad(value) {
+    return value < 10 ? '0' + value : '' + value
+  }
+}
+</script>
+
+<style lang="less">
+// Central palette: these are the main values to edit when tuning the watch UI.
+@page-bg: #0b0d0c;
+@text-primary: #f1f3ee;
+@text-muted: #a8afa5;
+@green: #b4e5a0;
+@gold: #e7d28b;
+
+.page {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background-color: @page-bg;
+}
+
+.page-swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.screen {
+  width: 100%;
+  height: 100%;
+  padding-left: 28px;
+  padding-right: 28px;
+  flex-direction: column;
+  background-color: @page-bg;
+}
+
+.page-indicator {
+  position: absolute;
+  top: 233px;
+  right: 11px;
+  width: 8px;
+  height: 48px;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.quota-screen {
+  padding-top: 30px;
+}
+
+.topbar,
+.usage-topbar,
+.task-topbar {
+  width: 100%;
+  height: 44px;
+  align-items: center;
+}
+
+.app-name {
+  width: 45%;
+  color: @text-primary;
+  font-size: 29px;
+  font-weight: 600;
+}
+
+.clock-box,
+.usage-clock-box,
+.task-clock-box {
+  width: 55%;
+  height: 40px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.clock-ring {
+  width: 18px;
+  height: 18px;
+  margin-right: 7px;
+  border-width: 5px;
+  border-color: #d7ddce;
+  border-radius: 9px;
+}
+
+.top-clock {
+  color: @text-primary;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.meter {
+  width: 100%;
+  height: 96px;
+  flex-direction: column;
+}
+
+.meter-five {
+  margin-top: 12px;
+}
+
+.meter-week {
+  margin-top: 12px;
+}
+
+.meter-heading {
+  width: 100%;
+  height: 38px;
+  align-items: center;
+}
+
+.meter-label {
+  width: 50%;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.meter-label-five,
+.meter-value-five {
+  color: @green;
+}
+
+.meter-label-week,
+.meter-value-week {
+  color: @gold;
+}
+
+.meter-value {
+  width: 50%;
+  font-size: 34px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.segments {
+  width: 100%;
+  height: 18px;
+  align-items: center;
+}
+
+.segment {
+  width: 25px;
+  height: 17px;
+  margin-right: 2px;
+  border-radius: 3px;
+}
+
+.segment-last {
+  margin-right: 0;
+}
+
+.meter-caption {
+  width: 100%;
+  height: 28px;
+  align-items: center;
+}
+
+.caption-muted {
+  width: 50%;
+  color: @text-muted;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.caption-right {
+  width: 50%;
+  text-align: right;
+}
+
+.reset-row {
+  width: 100%;
+  height: 80px;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.reset-card {
+  width: 48.5%;
+  height: 78px;
+  padding-left: 12px;
+  padding-top: 9px;
+  border-width: 1px;
+  border-color: #2b302b;
+  border-radius: 10px;
+  flex-direction: column;
+  background-color: #151816;
+}
+
+.reset-card-left {
+  margin-right: 3%;
+}
+
+.reset-label {
+  color: @text-muted;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.reset-time {
+  margin-top: 6px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.reset-time-five {
+  color: #dde5db;
+}
+
+.reset-time-week {
+  color: #dde5db;
+}
+
+.dashboard-footer {
+  width: 100%;
+  height: 38px;
+  margin-top: 44px;
+  align-items: center;
+}
+
+.footer-model {
+  width: 60%;
+  height: 38px;
+  align-items: center;
+}
+
+.source-square {
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+  border-radius: 3px;
+}
+
+.footer-brand {
+  color: #dde5db;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.footer-refresh {
+  width: 40%;
+  color: @text-muted;
+  font-size: 16px;
+  font-weight: 400;
+  text-align: right;
+}
+
+.usage-screen {
+  padding-top: 28px;
+}
+
+.usage-kicker {
+  width: 45%;
+  color: #ffffff;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.usage-total-block {
+  width: 100%;
+  height: 92px;
+  margin-top: 6px;
+  flex-direction: column;
+}
+
+.usage-total {
+  width: 100%;
+  height: 65px;
+  color: #ffffff;
+  font-size: 54px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+}
+
+.usage-unit {
+  width: 100%;
+  height: 24px;
+  color: #777487;
+  font-size: 18px;
+}
+
+.usage-range {
+  width: 100%;
+  height: 25px;
+  color: #8a8797;
+  font-size: 18px;
+}
+
+.usage-chart {
+  width: 100%;
+  height: 165px;
+  margin-top: 4px;
+  position: relative;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.usage-empty {
+  position: absolute;
+  top: 52px;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.usage-empty-line {
+  width: 38px;
+  height: 2px;
+  margin-bottom: 14px;
+  background-color: #373c35;
+}
+
+.usage-empty-text {
+  color: #8c938b;
+  font-size: 19px;
+}
+
+.usage-bar {
+  width: 27px;
+  min-height: 8px;
+  border-radius: 6px 6px 3px 3px;
+  background-color: #2f813e;
+}
+
+.usage-axis {
+  width: 100%;
+  height: 28px;
+  align-items: center;
+}
+
+.axis-label {
+  width: 25%;
+  color: #8b8798;
+  font-size: 16px;
+}
+
+.axis-peak {
+  width: 50%;
+  text-align: center;
+  color: #8b8798;
+}
+
+.axis-now {
+  width: 25%;
+  text-align: right;
+}
+
+.token-summary {
+  width: 100%;
+  height: 68px;
+  margin-top: 6px;
+  align-items: center;
+}
+
+.token-stat {
+  width: 33.33%;
+  height: 64px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.token-stat-label {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.token-stat-value {
+  margin-top: 4px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.token-input {
+  color: #9cf26e;
+}
+
+.token-output {
+  color: #66b9ff;
+}
+
+.token-cache {
+  color: #9788ff;
+}
+
+.task-screen {
+  padding-top: 28px;
+}
+
+.task-page-title {
+  width: 45%;
+  color: #f3f1f7;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.task-state-row {
+  width: 100%;
+  height: 30px;
+  margin-top: 16px;
+  align-items: center;
+}
+
+.task-state-square {
+  width: 13px;
+  height: 13px;
+  margin-right: 12px;
+  border-radius: 3px;
+}
+
+.task-state-text {
+  color: #bfc6bb;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.task-count-row {
+  width: 100%;
+  height: 58px;
+  margin-top: 5px;
+  align-items: center;
+}
+
+.task-count {
+  width: 86px;
+  height: 52px;
+  color: #f7f6f9;
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.task-count-unit {
+  height: 30px;
+  color: #a19cab;
+  font-size: 18px;
+}
+
+.task-running-card {
+  width: 100%;
+  height: 92px;
+  margin-top: 8px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 10px;
+  flex-direction: column;
+  border-width: 1px;
+  border-color: #302d3c;
+  border-radius: 12px;
+  background-color: #11101b;
+}
+
+.task-card-label {
+  color: #9e99aa;
+  font-size: 17px;
+}
+
+.task-running-title {
+  width: 100%;
+  margin-top: 5px;
+  color: #edebf1;
+  font-size: 20px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+}
+
+.task-divider {
+  width: 100%;
+  height: 1px;
+  margin-top: 14px;
+  background-color: #27252f;
+}
+
+.task-recent-heading {
+  width: 100%;
+  height: 26px;
+  margin-top: 12px;
+  color: #dad7e0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.task-completed-card {
+  width: 100%;
+  height: 96px;
+  margin-top: 8px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 10px;
+  flex-direction: column;
+  border-width: 1px;
+  border-color: #2b342b;
+  border-radius: 12px;
+  background-color: #101610;
+}
+
+.task-completed-title {
+  width: 100%;
+  color: #e6eee5;
+  font-size: 20px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+}
+
+.task-completed-time {
+  width: 100%;
+  margin-top: 5px;
+  color: #a7ef86;
+  font-size: 17px;
+}
+
+.task-footer {
+  width: 100%;
+  height: 26px;
+  margin-top: 12px;
+  align-items: center;
+}
+
+.task-footer-square {
+  width: 10px;
+  height: 10px;
+  margin-right: 9px;
+  border-radius: 2px;
+}
+
+.task-footer-text {
+  color: #8c8796;
+  font-size: 16px;
+}
+
+</style>

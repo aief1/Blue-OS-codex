@@ -1,0 +1,43 @@
+{
+  "package": "com.codex.pulse",
+  "name": "Codex脉冲",
+  "icon": "/assets/images/codex-pulse.png",
+  "versionName": "1.0.14",
+  "versionCode": 15,
+  "appCategory": [
+    "utilities"
+  ],
+  "config": {
+    "designWidth": 432
+  },
+  "deviceTypeList": [
+    "watch-square"
+  ],
+  "display": {
+    "backgroundColor": "#0b0d0c"
+  },
+  "features": [
+    {
+      "name": "blueos.network.fetch"
+    },
+    {
+      "name": "blueos.app.notification.notificationManager"
+    },
+    {
+      "name": "blueos.app.appmanager.schedule"
+    },
+    {
+      "name": "blueos.storage.storage"
+    }
+  ],
+  "router": {
+    "entry": "watch3001",
+    "pages": {
+      "watch3001": {
+        "component": "index",
+        "launchMode": "singleTask",
+        "followHand": "enable"
+      }
+    }
+  }
+}
