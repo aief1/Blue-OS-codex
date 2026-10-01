@@ -5,6 +5,18 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# Some managed launchers intentionally pass a minimal environment. Windows
+# networking and child-process APIs still require these standard variables.
+if ([string]::IsNullOrWhiteSpace($env:SystemRoot)) { $env:SystemRoot = 'C:\Windows' }
+if ([string]::IsNullOrWhiteSpace($env:WINDIR)) { $env:WINDIR = $env:SystemRoot }
+if ([string]::IsNullOrWhiteSpace($env:ComSpec)) { $env:ComSpec = Join-Path $env:SystemRoot 'System32\cmd.exe' }
+if ([string]::IsNullOrWhiteSpace($env:LOCALAPPDATA)) {
+    $env:LOCALAPPDATA = [Environment]::GetFolderPath('LocalApplicationData')
+}
+if ([string]::IsNullOrWhiteSpace($env:APPDATA)) {
+    $env:APPDATA = [Environment]::GetFolderPath('ApplicationData')
+}
+
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $localData = [Environment]::GetFolderPath('LocalApplicationData')
 if ([string]::IsNullOrWhiteSpace($localData)) {
