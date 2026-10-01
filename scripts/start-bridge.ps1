@@ -77,11 +77,15 @@ if ($bridgeRunning) {
 
 $python = (Get-Command python -ErrorAction Stop).Source
 $bridgePath = Join-Path $projectRoot 'bridge\codex_watch_bridge.py'
-$process = Start-Process -FilePath $python `
-    -ArgumentList ('"{0}" --port {1}' -f $bridgePath, $Port) `
-    -WorkingDirectory $projectRoot `
-    -WindowStyle Hidden `
-    -PassThru
+$commandHost = if ($env:ComSpec) { $env:ComSpec } else { 'C:\Windows\System32\cmd.exe' }
+$commandLine = '/d /c ""{0}" "{1}" --port {2}"' -f $python, $bridgePath, $Port
+$startInfo = [System.Diagnostics.ProcessStartInfo]::new()
+$startInfo.FileName = $commandHost
+$startInfo.Arguments = $commandLine
+$startInfo.WorkingDirectory = $projectRoot
+$startInfo.UseShellExecute = $false
+$startInfo.CreateNoWindow = $true
+$process = [System.Diagnostics.Process]::Start($startInfo)
 
 Start-Sleep -Seconds 2
 $status = Invoke-RestMethod -Uri "$baseUrl/api/status" `
